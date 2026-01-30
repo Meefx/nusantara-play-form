@@ -177,7 +177,7 @@ export default function Section2Form() {
 
       // Show success and redirect
       alert('✅ Survey berhasil disimpan!');
-      router.push('/');
+      window.location.href = '/';
     } catch (error) {
       console.error('Error submitting survey:', error);
       setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan survey');
@@ -240,8 +240,8 @@ export default function Section2Form() {
           onClick={handleSubmit}
           disabled={isSubmitting}
           className={`px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${isSubmitting
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:from-blue-700 hover:to-orange-600'
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:from-blue-700 hover:to-orange-600'
             }`}
         >
           {isSubmitting ? '⏳ Menyimpan...' : '✅ Selesai & Simpan'}
