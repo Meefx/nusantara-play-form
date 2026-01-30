@@ -53,7 +53,7 @@ export default function RadioGroup({
             className="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer mt-1"
           />
           <div className="ml-3 flex-1">
-            <span className="text-gray-700 group-hover:text-blue-700 font-medium">Lebih dari 5:</span>
+            <span className="text-gray-700 group-hover:text-blue-700 font-medium">Lainnya:</span>
             <input
               type="text"
               value={otherValue}
