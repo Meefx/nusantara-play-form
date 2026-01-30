@@ -61,10 +61,9 @@ export default function Section2Form() {
         </button>
         <button
           type="button"
-          onClick={() => router.push('/survey/section3')}
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg hover:from-blue-700 hover:to-orange-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
-          Lanjut ke Section 3 →
+          ✅ Selesai
         </button>
       </div>
     </div>

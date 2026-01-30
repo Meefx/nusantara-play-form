@@ -42,6 +42,44 @@ interface Section2Data {
   kategoriPakarOther: string;
   kontakPakar: string;
   adaBukti: string;
+
+  // D. Komunitas & Aktivitas
+  adaKomunitas: string;
+  bentukKomunitas: string[];
+  bentukKomunitasOther: string;
+  statusKeaktifan: string;
+  frekuensiKegiatan: string;
+  jenisKegiatan: string[];
+  jenisKegiatanOther: string;
+  adaDokumentasi: string;
+
+  // E. Alat, Sentra Produksi, Standardisasi, Dokumentasi
+  adaPengrajin: string;
+  skalaProduksi: string;
+  kepemilikanAlat: string[];
+  kondisiAlat: string;
+  standardisasiAlat: string;
+  dokumentasiAlat: string[];
+
+  // F. Peran & Dukungan Pemda
+  peranPemda: string;
+  bentukPeranPemda: string[];
+  bentukPeranPemdaOther: string;
+  bentukDukungan: string[];
+  bentukDukunganOther: string;
+  buktiDukungan: string[];
+
+  // G. Kondisi Kepengurusan
+  perkembangan: string;
+  indikatorPerkembangan: string[];
+  indikatorPerkembanganOther: string;
+  kegiatanBerjalan: string[];
+  kegiatanBerjalanOther: string;
+  statusProgram: string;
+  kendala: string[];
+  kendalaOther: string;
+  dampakKendala: string;
+  catatanTambahan: string;
 }
 
 interface Section2EntryProps {
@@ -80,7 +118,37 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
     kategoriPakar: [],
     kategoriPakarOther: "",
     kontakPakar: "",
-    adaBukti: ""
+    adaBukti: "",
+    adaKomunitas: "",
+    bentukKomunitas: [],
+    bentukKomunitasOther: "",
+    statusKeaktifan: "",
+    frekuensiKegiatan: "",
+    jenisKegiatan: [],
+    jenisKegiatanOther: "",
+    adaDokumentasi: "",
+    adaPengrajin: "",
+    skalaProduksi: "",
+    kepemilikanAlat: [],
+    kondisiAlat: "",
+    standardisasiAlat: "",
+    dokumentasiAlat: [],
+    peranPemda: "",
+    bentukPeranPemda: [],
+    bentukPeranPemdaOther: "",
+    bentukDukungan: [],
+    bentukDukunganOther: "",
+    buktiDukungan: [],
+    perkembangan: "",
+    indikatorPerkembangan: [],
+    indikatorPerkembanganOther: "",
+    kegiatanBerjalan: [],
+    kegiatanBerjalanOther: "",
+    statusProgram: "",
+    kendala: [],
+    kendalaOther: "",
+    dampakKendala: "",
+    catatanTambahan: ""
   });
 
   return (
@@ -549,6 +617,493 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
               ]}
               value={formData.adaBukti}
               onChange={(value) => setFormData({ ...formData, adaBukti: value })}
+            />
+          </QuestionCard>
+        </div>
+
+        {/* === SECTION D: KOMUNITAS & AKTIVITAS === */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h4 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-blue-300 pb-2">
+            D. Komunitas & Aktivitas
+          </h4>
+
+          <QuestionCard
+            title="Apakah ada komunitas/kelompok PR/OT di desa-desa wilayah ini?"
+            required={true}
+            icon="👥"
+          >
+            <RadioGroup
+              name={`adaKomunitas-${entryNumber}`}
+              options={[
+                { value: "ada", label: "Ada" },
+                { value: "tidak", label: "Tidak ada" },
+                { value: "tidak_tahu", label: "Tidak tahu" }
+              ]}
+              value={formData.adaKomunitas}
+              onChange={(value) => setFormData({ ...formData, adaKomunitas: value })}
+            />
+          </QuestionCard>
+
+          {formData.adaKomunitas === "ada" && (
+            <QuestionCard
+              title="Bentuk komunitas yang paling sesuai (Opsional)"
+              required={false}
+              icon="🏘️"
+            >
+              <CheckboxGroup
+                name={`bentukKomunitas-${entryNumber}`}
+                options={[
+                  { value: "informal", label: "Kelompok informal (warga)" },
+                  { value: "sanggar", label: "Sanggar/komunitas terdaftar" },
+                  { value: "ekskul", label: "Ekstrakurikuler sekolah" },
+                  { value: "klub", label: "Klub/organisasi olahraga" },
+                  { value: "adat", label: "Kelompok adat/budaya" }
+                ]}
+                values={formData.bentukKomunitas}
+                onChange={(values) => setFormData({ ...formData, bentukKomunitas: values })}
+                hasOther={true}
+                otherValue={formData.bentukKomunitasOther}
+                onOtherChange={(value) => setFormData({ ...formData, bentukKomunitasOther: value })}
+              />
+            </QuestionCard>
+          )}
+
+          <QuestionCard
+            title="Status keaktifan komunitas"
+            required={true}
+            icon="⚡"
+          >
+            <RadioGroup
+              name={`statusKeaktifan-${entryNumber}`}
+              options={[
+                { value: "aktif", label: "Aktif (ada agenda rutin)" },
+                { value: "sesekali", label: "Sesekali aktif (musiman)" },
+                { value: "tidak_aktif", label: "Tidak aktif" },
+                { value: "baru", label: "Baru terbentuk" },
+                { value: "tidak_tahu", label: "Tidak diketahui" }
+              ]}
+              value={formData.statusKeaktifan}
+              onChange={(value) => setFormData({ ...formData, statusKeaktifan: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Frekuensi kegiatan/latihan"
+            required={true}
+            icon="📅"
+          >
+            <RadioGroup
+              name={`frekuensiKegiatan-${entryNumber}`}
+              options={[
+                { value: "harian", label: "Harian" },
+                { value: "mingguan", label: "Mingguan" },
+                { value: "bulanan", label: "Bulanan" },
+                { value: "musiman", label: "Musiman (hari besar/festival)" },
+                { value: "tidak_tentu", label: "Tidak tentu" },
+                { value: "tidak_ada", label: "Tidak ada kegiatan" }
+              ]}
+              value={formData.frekuensiKegiatan}
+              onChange={(value) => setFormData({ ...formData, frekuensiKegiatan: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Jenis kegiatan yang dilakukan"
+            required={true}
+            icon="🎪"
+          >
+            <CheckboxGroup
+              name={`jenisKegiatan-${entryNumber}`}
+              options={[
+                { value: "latihan", label: "Latihan rutin" },
+                { value: "lomba", label: "Lomba/turnamen" },
+                { value: "festival", label: "Festival budaya/gelar seni" },
+                { value: "edukasi", label: "Edukasi/pelatihan" },
+                { value: "demonstrasi", label: "Demonstrasi/pentas" },
+                { value: "sekolah", label: "Kegiatan sekolah" }
+              ]}
+              values={formData.jenisKegiatan}
+              onChange={(values) => setFormData({ ...formData, jenisKegiatan: values })}
+              hasOther={true}
+              otherValue={formData.jenisKegiatanOther}
+              onOtherChange={(value) => setFormData({ ...formData, jenisKegiatanOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Apakah tersedia dokumentasi kegiatan (foto/poster/berita/daftar hadir)?"
+            required={true}
+            icon="📷"
+          >
+            <RadioGroup
+              name={`adaDokumentasi-${entryNumber}`}
+              options={[
+                { value: "ada", label: "Ada" },
+                { value: "tidak", label: "Tidak ada" },
+                { value: "akan", label: "Akan dilengkapi" }
+              ]}
+              value={formData.adaDokumentasi}
+              onChange={(value) => setFormData({ ...formData, adaDokumentasi: value })}
+            />
+          </QuestionCard>
+        </div>
+
+        {/* === SECTION E: ALAT, SENTRA PRODUKSI, STANDARDISASI, DOKUMENTASI === */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h4 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-red-300 pb-2">
+            E. Alat, Sentra Produksi, Standardisasi, Dokumentasi
+          </h4>
+
+          <QuestionCard
+            title="Apakah ada pengrajin/UMKM yang membuat alat PR/OT di wilayah ini?"
+            required={true}
+            icon="🔨"
+          >
+            <RadioGroup
+              name={`adaPengrajin-${entryNumber}`}
+              options={[
+                { value: "sentra", label: "Ada sentra pengrajin" },
+                { value: "individu", label: "Ada pengrajin individu (tidak terpusat)" },
+                { value: "tidak", label: "Tidak ada (alat dibuat sendiri)" },
+                { value: "tidak_tahu", label: "Tidak diketahui" }
+              ]}
+              value={formData.adaPengrajin}
+              onChange={(value) => setFormData({ ...formData, adaPengrajin: value })}
+            />
+          </QuestionCard>
+
+          {(formData.adaPengrajin === "sentra" || formData.adaPengrajin === "individu") && (
+            <QuestionCard
+              title="Skala produksi rata-rata (Opsional)"
+              required={false}
+              icon="📊"
+            >
+              <RadioGroup
+                name={`skalaProduksi-${entryNumber}`}
+                options={[
+                  { value: "kecil", label: "Pesanan kecil (1-10 unit/bulan)" },
+                  { value: "menengah", label: "Menengah (11-50 unit/bulan)" },
+                  { value: "besar", label: "Besar (>50 unit/bulan)" },
+                  { value: "tidak_tahu", label: "Tidak diketahui" }
+                ]}
+                value={formData.skalaProduksi}
+                onChange={(value) => setFormData({ ...formData, skalaProduksi: value })}
+              />
+            </QuestionCard>
+          )}
+
+          <QuestionCard
+            title="Status kepemilikan alat utama"
+            required={true}
+            icon="🏷️"
+          >
+            <CheckboxGroup
+              name={`kepemilikanAlat-${entryNumber}`}
+              options={[
+                { value: "komunitas", label: "Milik komunitas" },
+                { value: "desa", label: "Milik desa/kelurahan" },
+                { value: "sekolah", label: "Milik sekolah" },
+                { value: "individu", label: "Milik individu warga" },
+                { value: "pinjam", label: "Pinjam/sewa" },
+                { value: "campuran", label: "Campuran" }
+              ]}
+              values={formData.kepemilikanAlat}
+              onChange={(values) => setFormData({ ...formData, kepemilikanAlat: values })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Kondisi alat secara umum"
+            required={true}
+            icon="🔧"
+          >
+            <RadioGroup
+              name={`kondisiAlat-${entryNumber}`}
+              options={[
+                { value: "baik", label: "Baik (layak pakai)" },
+                { value: "cukup", label: "Cukup (perlu perbaikan ringan)" },
+                { value: "rusak", label: "Rusak (perlu penggantian)" },
+                { value: "tidak_tahu", label: "Tidak diketahui" },
+                { value: "tidak_ada", label: "Tidak ada alat khusus" }
+              ]}
+              value={formData.kondisiAlat}
+              onChange={(value) => setFormData({ ...formData, kondisiAlat: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Apakah alat PR/OT ini sudah memiliki standardisasi ukuran/bahan?"
+            required={true}
+            icon="📏"
+          >
+            <RadioGroup
+              name={`standardisasiAlat-${entryNumber}`}
+              options={[
+                { value: "standar", label: "Sudah standar (jelas ukuran/bahan)" },
+                { value: "fleksibel", label: "Ada acuan, tapi fleksibel" },
+                { value: "belum", label: "Belum ada standar" },
+                { value: "tidak_relevan", label: "Tidak relevan (alat sederhana/umum)" },
+                { value: "tidak_tahu", label: "Tidak diketahui" }
+              ]}
+              value={formData.standardisasiAlat}
+              onChange={(value) => setFormData({ ...formData, standardisasiAlat: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Dokumentasi alat tersedia dalam bentuk apa?"
+            required={true}
+            icon="📸"
+          >
+            <CheckboxGroup
+              name={`dokumentasiAlat-${entryNumber}`}
+              options={[
+                { value: "foto_lengkap", label: "Foto lengkap" },
+                { value: "foto_sebagian", label: "Foto sebagian" },
+                { value: "video", label: "Video" },
+                { value: "tidak_ada", label: "Tidak ada dokumentasi" },
+                { value: "akan", label: "Akan dilengkapi" }
+              ]}
+              values={formData.dokumentasiAlat}
+              onChange={(values) => setFormData({ ...formData, dokumentasiAlat: values })}
+            />
+          </QuestionCard>
+        </div>
+
+        {/* === SECTION F: PERAN & DUKUNGAN PEMDA === */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h4 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-orange-300 pb-2">
+            F. Peran & Dukungan Pemda
+          </h4>
+
+          <QuestionCard
+            title="Apakah pemerintah daerah berperan dalam pengembangan PR/OT ini?"
+            required={true}
+            icon="🏛️"
+          >
+            <RadioGroup
+              name={`peranPemda-${entryNumber}`}
+              options={[
+                { value: "ya", label: "Ya" },
+                { value: "tidak", label: "Tidak" },
+                { value: "tidak_tahu", label: "Tidak tahu" }
+              ]}
+              value={formData.peranPemda}
+              onChange={(value) => setFormData({ ...formData, peranPemda: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Bentuk peran pemerintah daerah yang pernah/masih dilakukan"
+            required={true}
+            icon="📋"
+          >
+            <CheckboxGroup
+              name={`bentukPeranPemda-${entryNumber}`}
+              options={[
+                { value: "pembinaan", label: "Pembinaan/pendampingan" },
+                { value: "fasilitasi", label: "Fasilitasi event/kompetisi" },
+                { value: "sarana", label: "Penyediaan sarana/venue" },
+                { value: "anggaran", label: "Penyediaan anggaran/hibah" },
+                { value: "promosi", label: "Promosi (media/publikasi)" },
+                { value: "regulasi", label: "Regulasi/SK/Perda" },
+                { value: "kemitraan", label: "Kemitraan dengan sekolah/komunitas" },
+                { value: "belum", label: "Belum ada peran" }
+              ]}
+              values={formData.bentukPeranPemda}
+              onChange={(values) => setFormData({ ...formData, bentukPeranPemda: values })}
+              hasOther={true}
+              otherValue={formData.bentukPeranPemdaOther}
+              onOtherChange={(value) => setFormData({ ...formData, bentukPeranPemdaOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Bentuk dukungan yang paling sering diberikan"
+            required={true}
+            icon="🤝"
+          >
+            <CheckboxGroup
+              name={`bentukDukungan-${entryNumber}`}
+              options={[
+                { value: "alat", label: "Bantuan alat" },
+                { value: "dana", label: "Bantuan dana" },
+                { value: "event", label: "Pengadaan event" },
+                { value: "pelatihan", label: "Pelatihan SDM/pelatih" },
+                { value: "transport", label: "Transport/akomodasi kegiatan" },
+                { value: "dokumentasi", label: "Dokumentasi dan publikasi" },
+                { value: "legalitas", label: "Legalitas/pendaftaran komunitas" }
+              ]}
+              values={formData.bentukDukungan}
+              onChange={(values) => setFormData({ ...formData, bentukDukungan: values })}
+              hasOther={true}
+              otherValue={formData.bentukDukunganOther}
+              onOtherChange={(value) => setFormData({ ...formData, bentukDukunganOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Apakah ada bukti dukungan?"
+            required={true}
+            icon="📄"
+          >
+            <CheckboxGroup
+              name={`buktiDukungan-${entryNumber}`}
+              options={[
+                { value: "dokumen", label: "Ada dokumen (SK/nota dinas/LPJ)" },
+                { value: "dokumentasi", label: "Ada dokumentasi (foto/berita)" },
+                { value: "tidak", label: "Tidak ada bukti" }
+              ]}
+              values={formData.buktiDukungan}
+              onChange={(values) => setFormData({ ...formData, buktiDukungan: values })}
+            />
+          </QuestionCard>
+        </div>
+
+        {/* === SECTION G: KONDISI KEPENGURUSAN === */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h4 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-blue-300 pb-2">
+            G. Kondisi Kepengurusan
+          </h4>
+
+          <QuestionCard
+            title="Perkembangan PR/OT dalam 12-24 bulan terakhir"
+            required={true}
+            icon="📈"
+          >
+            <RadioGroup
+              name={`perkembangan-${entryNumber}`}
+              options={[
+                { value: "meningkat", label: "Meningkat" },
+                { value: "stabil", label: "Stabil" },
+                { value: "menurun", label: "Menurun" },
+                { value: "tidak_tahu", label: "Tidak diketahui" }
+              ]}
+              value={formData.perkembangan}
+              onChange={(value) => setFormData({ ...formData, perkembangan: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Indikator perkembangan yang paling terlihat"
+            required={true}
+            icon="📊"
+          >
+            <CheckboxGroup
+              name={`indikatorPerkembangan-${entryNumber}`}
+              options={[
+                { value: "pemain", label: "Jumlah pemain/anggota" },
+                { value: "komunitas", label: "Jumlah komunitas aktif" },
+                { value: "event", label: "Jumlah event/kompetisi" },
+                { value: "dukungan", label: "Dukungan pemda/anggaran" },
+                { value: "pelatih", label: "Ketersediaan pelatih" },
+                { value: "alat", label: "Ketersediaan alat/venue" }
+              ]}
+              values={formData.indikatorPerkembangan}
+              onChange={(values) => setFormData({ ...formData, indikatorPerkembangan: values })}
+              hasOther={true}
+              otherValue={formData.indikatorPerkembanganOther}
+              onOtherChange={(value) => setFormData({ ...formData, indikatorPerkembanganOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Kegiatan yang saat ini sedang dilaksanakan"
+            required={true}
+            icon="🎯"
+          >
+            <CheckboxGroup
+              name={`kegiatanBerjalan-${entryNumber}`}
+              options={[
+                { value: "latihan", label: "Latihan rutin" },
+                { value: "pembinaan", label: "Pembinaan pelatih" },
+                { value: "lomba", label: "Lomba/turnamen" },
+                { value: "festival", label: "Festival/gelar budaya" },
+                { value: "pendataan", label: "Pendataan dan dokumentasi" },
+                { value: "pengadaan", label: "Pengadaan alat" },
+                { value: "sosialisasi", label: "Sosialisasi di sekolah" }
+              ]}
+              values={formData.kegiatanBerjalan}
+              onChange={(values) => setFormData({ ...formData, kegiatanBerjalan: values })}
+              hasOther={true}
+              otherValue={formData.kegiatanBerjalanOther}
+              onOtherChange={(value) => setFormData({ ...formData, kegiatanBerjalanOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Status kegiatan/program saat ini"
+            required={true}
+            icon="⚙️"
+          >
+            <RadioGroup
+              name={`statusProgram-${entryNumber}`}
+              options={[
+                { value: "perencanaan", label: "Perencanaan" },
+                { value: "berjalan", label: "Sedang berjalan" },
+                { value: "selesai", label: "Selesai (3 bulan terakhir)" },
+                { value: "tertunda", label: "Tertunda" },
+                { value: "tidak_ada", label: "Tidak ada program" }
+              ]}
+              value={formData.statusProgram}
+              onChange={(value) => setFormData({ ...formData, statusProgram: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Kendala utama yang dihadapi"
+            required={true}
+            icon="⚠️"
+          >
+            <CheckboxGroup
+              name={`kendala-${entryNumber}`}
+              options={[
+                { value: "sdm", label: "SDM (pelatih/pengurus minim)" },
+                { value: "dana", label: "Dana/anggaran" },
+                { value: "sarana", label: "Sarana/venue" },
+                { value: "alat", label: "Alat (kurang/rusak)" },
+                { value: "koordinasi", label: "Koordinasi dan organisasi" },
+                { value: "dukungan", label: "Dukungan pemerintah minim" },
+                { value: "regenerasi", label: "Regenerasi/minat anak muda menurun" },
+                { value: "akses", label: "Akses lokasi/transport" },
+                { value: "dokumentasi", label: "Dokumentasi minim" }
+              ]}
+              values={formData.kendala}
+              onChange={(values) => setFormData({ ...formData, kendala: values })}
+              hasOther={true}
+              otherValue={formData.kendalaOther}
+              onOtherChange={(value) => setFormData({ ...formData, kendalaOther: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Seberapa besar dampak kendala tersebut?"
+            required={true}
+            icon="💥"
+          >
+            <RadioGroup
+              name={`dampakKendala-${entryNumber}`}
+              options={[
+                { value: "rendah", label: "Rendah" },
+                { value: "sedang", label: "Sedang" },
+                { value: "tinggi", label: "Tinggi" }
+              ]}
+              value={formData.dampakKendala}
+              onChange={(value) => setFormData({ ...formData, dampakKendala: value })}
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            title="Catatan tambahan/kebutuhan bantuan (Opsional)"
+            required={false}
+            icon="📝"
+          >
+            <TextArea
+              label=""
+              value={formData.catatanTambahan}
+              onChange={(value) => setFormData({ ...formData, catatanTambahan: value })}
+              placeholder="Tuliskan catatan tambahan atau kebutuhan bantuan yang diperlukan..."
+              rows={5}
             />
           </QuestionCard>
         </div>
