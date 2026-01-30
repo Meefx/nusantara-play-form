@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import Survey from "@/lib/models/Survey";
+import prisma from "@/lib/prisma";
 
 // GET /api/survey - Get all surveys (with pagination & filtering)
 export async function GET(request: NextRequest) {
     try {
-        await dbConnect();
-
         const searchParams = request.nextUrl.searchParams;
 
         // Pagination
@@ -18,54 +15,80 @@ export async function GET(request: NextRequest) {
         const status = searchParams.get("status");
         const provinsi = searchParams.get("provinsi");
         const kabKota = searchParams.get("kabKota");
-        const kategori = searchParams.get("kategori");
         const search = searchParams.get("search");
 
-        // Build query
+        // Build where clause
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const query: any = {};
+        const where: any = {};
 
         if (status) {
-            query.status = status;
+            where.status = status;
         }
 
         if (provinsi) {
-            query["section1.wilayahKerja.provinsi"] = {
-                $regex: provinsi,
-                $options: "i",
+            where.section1 = {
+                ...where.section1,
+                is: {
+                    wilayahKerja: {
+                        is: {
+                            provinsi: {
+                                contains: provinsi,
+                                mode: "insensitive",
+                            },
+                        },
+                    },
+                },
             };
         }
 
         if (kabKota) {
-            query["section1.wilayahKerja.kabKota"] = {
-                $regex: kabKota,
-                $options: "i",
+            where.section1 = {
+                ...where.section1,
+                is: {
+                    wilayahKerja: {
+                        is: {
+                            kabKota: {
+                                contains: kabKota,
+                                mode: "insensitive",
+                            },
+                        },
+                    },
+                },
             };
         }
 
-        if (kategori) {
-            query["section2.entries.identitas.kategori"] = kategori;
-        }
-
         if (search) {
-            query.$or = [
-                { "section1.kontak.namaLengkap": { $regex: search, $options: "i" } },
-                { "section2.entries.identitas.namaPROT": { $regex: search, $options: "i" } },
+            where.OR = [
+                {
+                    section1: {
+                        is: {
+                            kontak: {
+                                is: {
+                                    namaLengkap: {
+                                        contains: search,
+                                        mode: "insensitive",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             ];
         }
 
         // Sorting
         const sortBy = searchParams.get("sortBy") || "submittedAt";
-        const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+        const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
 
         // Execute query
         const [surveys, total] = await Promise.all([
-            Survey.find(query)
-                .sort({ [sortBy]: sortOrder })
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            Survey.countDocuments(query),
+            prisma.survey.findMany({
+                where,
+                orderBy: { [sortBy]: sortOrder },
+                skip,
+                take: limit,
+            }),
+            prisma.survey.count({ where }),
         ]);
 
         const totalPages = Math.ceil(total / limit);
@@ -95,21 +118,213 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// Helper function to ensure nested objects have default values
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ensureDefaults(data: any) {
+    const defaultWilayahKerja = {
+        provinsi: "",
+        kabKota: "",
+        kecamatan: "",
+        desaKelurahan: "",
+    };
+
+    const defaultKontak = {
+        namaLengkap: "",
+        nomorHP: "",
+        instansi: "",
+    };
+
+    const defaultSection1 = {
+        role: "",
+        roleOther: "",
+        wilayahKerja: defaultWilayahKerja,
+        kontak: defaultKontak,
+        jumlahPROT: "",
+        jumlahPROTOther: "",
+    };
+
+    const defaultLokasi = {
+        jenis: [],
+        lokasiOther: "",
+        kelengkapanLokasi: "",
+        alamatLengkap: "",
+        koordinatGPS: "",
+    };
+
+    const defaultIdentitas = {
+        kategori: "",
+        namaPROT: "",
+        adaNamaLain: "",
+        variasiNama: "",
+        lokasi: defaultLokasi,
+    };
+
+    const defaultAturan = {
+        statusAturan: "",
+        sumberRujukan: [],
+        sumberRujukanOther: "",
+        ringkasanAturan: "",
+        adaVariasiAturan: "",
+        jelaskanVariasi: "",
+    };
+
+    const defaultKoordinator = {
+        ada: "",
+        peran: "",
+        peranOther: "",
+        cakupan: "",
+        kontak: "",
+    };
+
+    const defaultPelatih = {
+        status: "",
+        level: "",
+        kontak: "",
+        jadwalLatihan: "",
+    };
+
+    const defaultPakar = {
+        ada: "",
+        kategori: [],
+        kategoriOther: "",
+        kontak: "",
+        adaBukti: "",
+    };
+
+    const defaultSDM = {
+        koordinator: defaultKoordinator,
+        pelatih: defaultPelatih,
+        pakar: defaultPakar,
+    };
+
+    const defaultKomunitasAktivitas = {
+        adaKomunitas: "",
+        bentukKomunitas: [],
+        bentukKomunitasOther: "",
+        statusKeaktifan: "",
+        frekuensiKegiatan: "",
+        jenisKegiatan: [],
+        jenisKegiatanOther: "",
+        adaDokumentasi: "",
+    };
+
+    const defaultAlatProduksi = {
+        adaPengrajin: "",
+        skalaProduksi: "",
+        kepemilikanAlat: [],
+        kondisiAlat: "",
+        standardisasiAlat: "",
+        dokumentasiAlat: [],
+    };
+
+    const defaultPeranPemda = {
+        adaPeran: "",
+        bentukPeran: [],
+        bentukPeranOther: "",
+        bentukDukungan: [],
+        bentukDukunganOther: "",
+        buktiDukungan: [],
+    };
+
+    const defaultKondisiKepengurusan = {
+        perkembangan: "",
+        indikatorPerkembangan: [],
+        indikatorPerkembanganOther: "",
+        kegiatanBerjalan: [],
+        kegiatanBerjalanOther: "",
+        statusProgram: "",
+        kendala: [],
+        kendalaOther: "",
+        dampakKendala: "",
+        catatanTambahan: "",
+    };
+
+    // Merge section1 with defaults
+    const section1 = {
+        ...defaultSection1,
+        ...data.section1,
+        wilayahKerja: {
+            ...defaultWilayahKerja,
+            ...(data.section1?.wilayahKerja || {}),
+        },
+        kontak: {
+            ...defaultKontak,
+            ...(data.section1?.kontak || {}),
+        },
+    };
+
+    // Merge section2 entries with defaults
+    const entries = (data.section2?.entries || []).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (entry: any, index: number) => ({
+            entryNumber: entry.entryNumber || index + 1,
+            identitas: {
+                ...defaultIdentitas,
+                ...entry.identitas,
+                lokasi: {
+                    ...defaultLokasi,
+                    ...(entry.identitas?.lokasi || {}),
+                },
+            },
+            aturan: {
+                ...defaultAturan,
+                ...entry.aturan,
+            },
+            sdm: {
+                ...defaultSDM,
+                ...entry.sdm,
+                koordinator: {
+                    ...defaultKoordinator,
+                    ...(entry.sdm?.koordinator || {}),
+                },
+                pelatih: {
+                    ...defaultPelatih,
+                    ...(entry.sdm?.pelatih || {}),
+                },
+                pakar: {
+                    ...defaultPakar,
+                    ...(entry.sdm?.pakar || {}),
+                },
+            },
+            komunitasAktivitas: {
+                ...defaultKomunitasAktivitas,
+                ...entry.komunitasAktivitas,
+            },
+            alatProduksi: {
+                ...defaultAlatProduksi,
+                ...entry.alatProduksi,
+            },
+            peranPemda: {
+                ...defaultPeranPemda,
+                ...entry.peranPemda,
+            },
+            kondisiKepengurusan: {
+                ...defaultKondisiKepengurusan,
+                ...entry.kondisiKepengurusan,
+            },
+        })
+    );
+
+    return {
+        status: data.status || "draft",
+        section1,
+        section2: {
+            entries,
+        },
+    };
+}
+
 // POST /api/survey - Create a new survey
 export async function POST(request: NextRequest) {
     try {
-        await dbConnect();
-
         const body = await request.json();
 
-        // Create survey with submitted data
-        const survey = new Survey({
-            ...body,
-            submittedAt: new Date(),
-            status: body.status || "draft",
-        });
+        // Ensure all nested objects have proper defaults
+        const surveyData = ensureDefaults(body);
 
-        await survey.save();
+        const survey = await prisma.survey.create({
+            data: surveyData,
+        });
 
         return NextResponse.json(
             {

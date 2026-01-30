@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import Survey from "@/lib/models/Survey";
-import mongoose from "mongoose";
+import prisma from "@/lib/prisma";
 
 interface RouteParams {
     params: Promise<{ id: string }>;
 }
 
-// Helper to validate MongoDB ObjectId
+// Helper to validate MongoDB ObjectId (24 hex characters)
 function isValidObjectId(id: string): boolean {
-    return mongoose.Types.ObjectId.isValid(id);
+    return /^[a-fA-F0-9]{24}$/.test(id);
 }
 
 // GET /api/survey/[id] - Get a single survey by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
-        await dbConnect();
-
         const { id } = await params;
 
         if (!isValidObjectId(id)) {
@@ -29,7 +25,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const survey = await Survey.findById(id).lean();
+        const survey = await prisma.survey.findUnique({
+            where: { id },
+        });
 
         if (!survey) {
             return NextResponse.json(
@@ -58,11 +56,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 }
 
-// PUT /api/survey/[id] - Update a survey
+// PUT /api/survey/[id] - Update a survey (full replacement)
 export async function PUT(request: NextRequest, { params }: RouteParams) {
     try {
-        await dbConnect();
-
         const { id } = await params;
 
         if (!isValidObjectId(id)) {
@@ -78,22 +74,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const body = await request.json();
 
         // Remove fields that shouldn't be updated directly
-        delete body._id;
+        delete body.id;
         delete body.createdAt;
 
-        const survey = await Survey.findByIdAndUpdate(
-            id,
-            {
-                ...body,
-                updatedAt: new Date(),
-            },
-            {
-                new: true, // Return updated document
-                runValidators: true, // Run schema validators
-            }
-        ).lean();
+        const survey = await prisma.survey.update({
+            where: { id },
+            data: body,
+        });
 
-        if (!survey) {
+        return NextResponse.json({
+            success: true,
+            message: "Survey updated successfully",
+            data: survey,
+        });
+    } catch (error) {
+        console.error("Error updating survey:", error);
+
+        // Check if it's a "not found" error
+        if (error instanceof Error && error.message.includes("Record to update not found")) {
             return NextResponse.json(
                 {
                     success: false,
@@ -103,13 +101,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            message: "Survey updated successfully",
-            data: survey,
-        });
-    } catch (error) {
-        console.error("Error updating survey:", error);
         return NextResponse.json(
             {
                 success: false,
@@ -124,8 +115,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // PATCH /api/survey/[id] - Partial update a survey
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
     try {
-        await dbConnect();
-
         const { id } = await params;
 
         if (!isValidObjectId(id)) {
@@ -141,22 +130,24 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         const body = await request.json();
 
         // Remove fields that shouldn't be updated directly
-        delete body._id;
+        delete body.id;
         delete body.createdAt;
 
-        const survey = await Survey.findByIdAndUpdate(
-            id,
-            {
-                $set: body,
-                updatedAt: new Date(),
-            },
-            {
-                new: true,
-                runValidators: true,
-            }
-        ).lean();
+        const survey = await prisma.survey.update({
+            where: { id },
+            data: body,
+        });
 
-        if (!survey) {
+        return NextResponse.json({
+            success: true,
+            message: "Survey patched successfully",
+            data: survey,
+        });
+    } catch (error) {
+        console.error("Error patching survey:", error);
+
+        // Check if it's a "not found" error
+        if (error instanceof Error && error.message.includes("Record to update not found")) {
             return NextResponse.json(
                 {
                     success: false,
@@ -166,13 +157,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            message: "Survey patched successfully",
-            data: survey,
-        });
-    } catch (error) {
-        console.error("Error patching survey:", error);
         return NextResponse.json(
             {
                 success: false,
@@ -187,8 +171,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/survey/[id] - Delete a survey
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
     try {
-        await dbConnect();
-
         const { id } = await params;
 
         if (!isValidObjectId(id)) {
@@ -201,9 +183,20 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const survey = await Survey.findByIdAndDelete(id).lean();
+        await prisma.survey.delete({
+            where: { id },
+        });
 
-        if (!survey) {
+        return NextResponse.json({
+            success: true,
+            message: "Survey deleted successfully",
+            data: { id },
+        });
+    } catch (error) {
+        console.error("Error deleting survey:", error);
+
+        // Check if it's a "not found" error
+        if (error instanceof Error && error.message.includes("Record to delete does not exist")) {
             return NextResponse.json(
                 {
                     success: false,
@@ -213,13 +206,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        return NextResponse.json({
-            success: true,
-            message: "Survey deleted successfully",
-            data: { id },
-        });
-    } catch (error) {
-        console.error("Error deleting survey:", error);
         return NextResponse.json(
             {
                 success: false,
