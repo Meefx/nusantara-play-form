@@ -157,14 +157,35 @@ export default function Section1Form() {
       <div className="flex justify-between items-center pt-8">
         <button
           type="button"
-          onClick={() => router.push('/survey')}
+          onClick={() => router.push('/')}
           className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200 font-semibold"
         >
           ← Kembali
         </button>
         <button
           type="button"
-          onClick={() => router.push('/survey/section2')}
+          onClick={() => {
+            // Simpan data Section 1 ke localStorage
+            const section1Data = {
+              role: formData.role,
+              roleOther: formData.roleOther,
+              wilayahKerja: {
+                provinsi: formData.provinsi,
+                kabKota: formData.kabKota,
+                kecamatan: formData.kecamatan,
+                desaKelurahan: formData.desaKelurahan,
+              },
+              kontak: {
+                namaLengkap: formData.namaLengkap,
+                nomorHP: formData.nomorHP,
+                instansi: formData.instansi,
+              },
+              jumlahPROT: formData.jumlahPROT,
+              jumlahPROTOther: formData.jumlahPROTOther,
+            };
+            localStorage.setItem('surveySection1', JSON.stringify(section1Data));
+            router.push('/survey/section2');
+          }}
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg hover:from-blue-700 hover:to-orange-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           Lanjut ke Section 2 →

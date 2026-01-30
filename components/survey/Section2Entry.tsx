@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import QuestionCard from "./QuestionCard";
 import RadioGroup from "./RadioGroup";
 import CheckboxGroup from "./CheckboxGroup";
 import InputField from "./InputField";
 import TextArea from "./TextArea";
 
-interface Section2Data {
+export interface Section2Data {
   // A. Identitas PR/OT
   kategori: string;
   namaPROT: string;
@@ -86,9 +86,10 @@ interface Section2EntryProps {
   entryNumber: number;
   onRemove?: () => void;
   showRemoveButton?: boolean;
+  onChange?: (data: Section2Data) => void;
 }
 
-export default function Section2Entry({ entryNumber, onRemove, showRemoveButton = true }: Section2EntryProps) {
+export default function Section2Entry({ entryNumber, onRemove, showRemoveButton = true, onChange }: Section2EntryProps) {
   const [formData, setFormData] = useState<Section2Data>({
     kategori: "",
     namaPROT: "",
@@ -150,6 +151,13 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
     dampakKendala: "",
     catatanTambahan: ""
   });
+
+  // Notify parent when formData changes
+  useEffect(() => {
+    if (onChange) {
+      onChange(formData);
+    }
+  }, [formData, onChange]);
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-2xl p-6 mb-8 border-2 border-blue-200 shadow-lg">
