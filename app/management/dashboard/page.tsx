@@ -92,7 +92,12 @@ export default function ManagementDashboard() {
             const result = await response.json();
 
             if (result.success) {
-                setSurveys(result.data);
+                // Convert _id to string untuk memastikan tidak undefined
+                const surveysWithStringId = result.data.map((survey: any) => ({
+                    ...survey,
+                    _id: survey._id?.toString() || survey.id?.toString() || ""
+                }));
+                setSurveys(surveysWithStringId);
                 setPagination(result.pagination);
             }
         } catch (error) {
