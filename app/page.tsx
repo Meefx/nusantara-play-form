@@ -23,7 +23,7 @@ export default function Home() {
         <div className="text-center mb-6 animate-fade-in">
           <div className="inline-block bg-white rounded-full p-4 shadow-2xl">
             <img
-              src="/logo_KPOTI.jpg.jpeg"
+              src="/Logo_KPOTI.jpg.jpeg"
               alt="Logo KPOTI"
               width="80"
               height="80"
