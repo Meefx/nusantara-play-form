@@ -176,11 +176,19 @@ export default function ManagementDashboard() {
             <header className="bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 py-4">
                     <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-bold">📊 Management Dashboard</h1>
-                            <p className="text-white/80 text-sm">
-                                Kelola data survey PR & OT
-                            </p>
+                        <div className="flex items-center gap-4">
+                            <Link
+                                href="/"
+                                className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors flex items-center gap-2"
+                            >
+                                ← Home
+                            </Link>
+                            <div>
+                                <h1 className="text-2xl font-bold">📊 Management Dashboard</h1>
+                                <p className="text-white/80 text-sm">
+                                    Kelola data survey PR & OT
+                                </p>
+                            </div>
                         </div>
                         <button
                             onClick={handleLogout}
