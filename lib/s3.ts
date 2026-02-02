@@ -13,16 +13,26 @@ const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "";
 
 console.log("BUCKET_NAME:", BUCKET_NAME);
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+  "video/mp4",
+  "video/quicktime",
+  "video/x-msvideo",
+  "video/webm"
+];
 
 export function validateFile(file: File): { valid: boolean; error?: string } {
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return { valid: false, error: "Hanya file gambar (JPEG, PNG, WebP) dan PDF yang diizinkan" };
+    return { valid: false, error: "Hanya file gambar (JPEG, PNG, WebP), PDF, dan video (MP4, MOV, AVI, WebM) yang diizinkan" };
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    return { valid: false, error: "Ukuran file maksimal 10MB" };
+    return { valid: false, error: "Ukuran file maksimal 500MB" };
   }
 
   return { valid: true };

@@ -124,6 +124,10 @@ export default function FileUpload({ prefix, initialFiles = [], onFilesChange, m
       "image/png": [".png"],
       "image/webp": [".webp"],
       "application/pdf": [".pdf"],
+      "video/mp4": [".mp4"],
+      "video/quicktime": [".mov"],
+      "video/x-msvideo": [".avi"],
+      "video/webm": [".webm"],
     },
     disabled: uploading || uploadedFiles.length >= maxFiles,
   });
@@ -157,7 +161,7 @@ export default function FileUpload({ prefix, initialFiles = [], onFilesChange, m
             <div>
               <p className="text-gray-600 font-medium">Drag & drop file di sini</p>
               <p className="text-gray-400 text-sm">atau klik untuk memilih</p>
-              <p className="text-gray-400 text-xs mt-2">Format: JPG, PNG, WebP, PDF (Maks. 10MB)</p>
+              <p className="text-gray-400 text-xs mt-2">Format: JPG, PNG, WebP, PDF, MP4, MOV, AVI, WebM (Maks. 500MB)</p>
             </div>
           )}
         </div>
@@ -183,6 +187,10 @@ export default function FileUpload({ prefix, initialFiles = [], onFilesChange, m
                     {file.name.toLowerCase().includes(".pdf") ? (
                       <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                      </svg>
+                    ) : file.name.toLowerCase().match(/\.(mp4|mov|avi|webm)$/) ? (
+                      <svg className="w-8 h-8 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                       </svg>
                     ) : (
                       <svg className="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
