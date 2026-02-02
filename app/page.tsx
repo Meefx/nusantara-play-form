@@ -22,13 +22,12 @@ export default function Home() {
         {/* Logo KPOTI - Letakkan file logo di folder public dengan nama kpoti-logo.png */}
         <div className="text-center mb-6 animate-fade-in">
           <div className="inline-block bg-white rounded-full p-4 shadow-2xl">
-            <Image
+            <img
               src="/logo_KPOTI.jpg.jpeg"
               alt="Logo KPOTI"
-              width={80}
-              height={80}
+              width="80"
+              height="80"
               className="object-contain"
-              priority
             />
           </div>
         </div>
