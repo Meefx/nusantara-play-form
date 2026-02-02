@@ -6,6 +6,7 @@ import RadioGroup from "./RadioGroup";
 import CheckboxGroup from "./CheckboxGroup";
 import InputField from "./InputField";
 import TextArea from "./TextArea";
+import FileUpload from "./FileUpload";
 
 export interface Section2Data {
   // A. Identitas PR/OT
@@ -42,6 +43,7 @@ export interface Section2Data {
   kategoriPakarOther: string;
   kontakPakar: string;
   adaBukti: string;
+  buktiFiles: string[];
 
   // D. Komunitas & Aktivitas
   adaKomunitas: string;
@@ -52,6 +54,7 @@ export interface Section2Data {
   jenisKegiatan: string[];
   jenisKegiatanOther: string;
   adaDokumentasi: string;
+  dokumentasiFiles: string[];
 
   // E. Alat, Sentra Produksi, Standardisasi, Dokumentasi
   adaPengrajin: string;
@@ -60,6 +63,7 @@ export interface Section2Data {
   kondisiAlat: string;
   standardisasiAlat: string;
   dokumentasiAlat: string[];
+  dokumentasiAlatFiles: string[];
 
   // F. Peran & Dukungan Pemda
   peranPemda: string;
@@ -68,6 +72,7 @@ export interface Section2Data {
   bentukDukungan: string[];
   bentukDukunganOther: string;
   buktiDukungan: string[];
+  buktiDukunganFiles: string[];
 
   // G. Kondisi Kepengurusan
   perkembangan: string;
@@ -120,6 +125,7 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
     kategoriPakarOther: "",
     kontakPakar: "",
     adaBukti: "",
+    buktiFiles: [],
     adaKomunitas: "",
     bentukKomunitas: [],
     bentukKomunitasOther: "",
@@ -128,18 +134,21 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
     jenisKegiatan: [],
     jenisKegiatanOther: "",
     adaDokumentasi: "",
+    dokumentasiFiles: [],
     adaPengrajin: "",
     skalaProduksi: "",
     kepemilikanAlat: [],
     kondisiAlat: "",
     standardisasiAlat: "",
     dokumentasiAlat: [],
+    dokumentasiAlatFiles: [],
     peranPemda: "",
     bentukPeranPemda: [],
     bentukPeranPemdaOther: "",
     bentukDukungan: [],
     bentukDukunganOther: "",
     buktiDukungan: [],
+    buktiDukunganFiles: [],
     perkembangan: "",
     indikatorPerkembangan: [],
     indikatorPerkembanganOther: "",
@@ -627,6 +636,21 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
               onChange={(value) => setFormData({ ...formData, adaBukti: value })}
             />
           </QuestionCard>
+
+          {formData.adaBukti === "ada" && (
+            <QuestionCard
+              title="Upload bukti peran (foto/sertifikat/berita)"
+              required={false}
+              icon="📎"
+            >
+              <FileUpload
+                prefix={`surveys/sdm-bukti/${entryNumber}`}
+                initialFiles={formData.buktiFiles}
+                onFilesChange={(files) => setFormData({ ...formData, buktiFiles: files })}
+                maxFiles={5}
+              />
+            </QuestionCard>
+          )}
         </div>
 
         {/* === SECTION D: KOMUNITAS & AKTIVITAS === */}
@@ -754,6 +778,21 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
               onChange={(value) => setFormData({ ...formData, adaDokumentasi: value })}
             />
           </QuestionCard>
+
+          {formData.adaDokumentasi === "ada" && (
+            <QuestionCard
+              title="Upload dokumentasi kegiatan"
+              required={false}
+              icon="📎"
+            >
+              <FileUpload
+                prefix={`surveys/komunitas-dokumentasi/${entryNumber}`}
+                initialFiles={formData.dokumentasiFiles}
+                onFilesChange={(files) => setFormData({ ...formData, dokumentasiFiles: files })}
+                maxFiles={5}
+              />
+            </QuestionCard>
+          )}
         </div>
 
         {/* === SECTION E: ALAT, SENTRA PRODUKSI, STANDARDISASI, DOKUMENTASI === */}
@@ -876,6 +915,21 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
               onChange={(values) => setFormData({ ...formData, dokumentasiAlat: values })}
             />
           </QuestionCard>
+
+          {(!formData.dokumentasiAlat.includes("tidak_ada") && !formData.dokumentasiAlat.includes("akan")) && (
+            <QuestionCard
+              title="Upload dokumentasi alat"
+              required={false}
+              icon="📎"
+            >
+              <FileUpload
+                prefix={`surveys/alat-dokumentasi/${entryNumber}`}
+                initialFiles={formData.dokumentasiAlatFiles}
+                onFilesChange={(files) => setFormData({ ...formData, dokumentasiAlatFiles: files })}
+                maxFiles={5}
+              />
+            </QuestionCard>
+          )}
         </div>
 
         {/* === SECTION F: PERAN & DUKUNGAN PEMDA === */}
@@ -966,6 +1020,21 @@ export default function Section2Entry({ entryNumber, onRemove, showRemoveButton 
               onChange={(values) => setFormData({ ...formData, buktiDukungan: values })}
             />
           </QuestionCard>
+
+          {!formData.buktiDukungan.includes("tidak") && (
+            <QuestionCard
+              title="Upload bukti dukungan"
+              required={false}
+              icon="📎"
+            >
+              <FileUpload
+                prefix={`surveys/pemda-bukti/${entryNumber}`}
+                initialFiles={formData.buktiDukunganFiles}
+                onFilesChange={(files) => setFormData({ ...formData, buktiDukunganFiles: files })}
+                maxFiles={5}
+              />
+            </QuestionCard>
+          )}
         </div>
 
         {/* === SECTION G: KONDISI KEPENGURUSAN === */}

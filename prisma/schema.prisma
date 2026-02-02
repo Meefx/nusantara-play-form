@@ -93,6 +93,7 @@ type Pakar {
   kategoriOther String   @default("")
   kontak        String   @default("")
   adaBukti      String   @default("")
+  buktiFiles    String[] @default([])
 }
 
 type SDM {
@@ -110,6 +111,7 @@ type KomunitasAktivitas {
   jenisKegiatan        String[] @default([])
   jenisKegiatanOther   String   @default("")
   adaDokumentasi       String   @default("")
+  dokumentasiFiles     String[] @default([])
 }
 
 type AlatProduksi {
@@ -119,6 +121,7 @@ type AlatProduksi {
   kondisiAlat       String   @default("")
   standardisasiAlat String   @default("")
   dokumentasiAlat   String[] @default([])
+  dokumentasiFiles  String[] @default([])
 }
 
 type PeranPemda {
@@ -128,6 +131,7 @@ type PeranPemda {
   bentukDukungan      String[] @default([])
   bentukDukunganOther String   @default("")
   buktiDukungan       String[] @default([])
+  buktiFiles          String[] @default([])
 }
 
 type KondisiKepengurusan {

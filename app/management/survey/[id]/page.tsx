@@ -71,6 +71,7 @@ interface Survey {
                     kategoriOther: string;
                     kontak: string;
                     adaBukti: string;
+                    buktiFiles: string[];
                 };
             };
             komunitasAktivitas: {
@@ -82,6 +83,7 @@ interface Survey {
                 jenisKegiatan: string[];
                 jenisKegiatanOther: string;
                 adaDokumentasi: string;
+                dokumentasiFiles: string[];
             };
             alatProduksi: {
                 adaPengrajin: string;
@@ -90,6 +92,7 @@ interface Survey {
                 kondisiAlat: string;
                 standardisasiAlat: string;
                 dokumentasiAlat: string[];
+                dokumentasiFiles: string[];
             };
             peranPemda: {
                 adaPeran: string;
@@ -98,6 +101,7 @@ interface Survey {
                 bentukDukungan: string[];
                 bentukDukunganOther: string;
                 buktiDukungan: string[];
+                buktiFiles: string[];
             };
             kondisiKepengurusan: {
                 perkembangan: string;
@@ -649,7 +653,7 @@ export default function SurveyDetailPage({
                                             {currentEntry.sdm?.pelatih?.jadwalLatihan || "-"}
                                         </p>
                                     </div>
-                                    <div className="bg-orange-50 p-4 rounded-lg">
+                                     <div className="bg-orange-50 p-4 rounded-lg">
                                         <h4 className="font-semibold text-orange-800 mb-2">Pakar</h4>
                                         <p className="text-sm">
                                             <span className="text-gray-500">Ada:</span>{" "}
@@ -666,6 +670,25 @@ export default function SurveyDetailPage({
                                             <span className="text-gray-500">Kontak:</span>{" "}
                                             {currentEntry.sdm?.pakar?.kontak || "-"}
                                         </p>
+                                        {currentEntry.sdm?.pakar?.buktiFiles &&
+                                            currentEntry.sdm.pakar.buktiFiles.length > 0 && (
+                                            <div className="mt-3">
+                                                <span className="text-gray-500 text-sm">File Bukti:</span>
+                                                <div className="mt-1 space-y-1">
+                                                    {currentEntry.sdm.pakar.buktiFiles.map((file, idx) => (
+                                                        <a
+                                                            key={idx}
+                                                            href={file}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
+                                                        >
+                                                            📎 {file.split("/").pop()}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -722,13 +745,32 @@ export default function SurveyDetailPage({
                                             )}
                                         </p>
                                     </div>
-                                    <div>
+                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                             Dokumentasi Kegiatan
                                         </h4>
                                         <p className="text-gray-800">
                                             {currentEntry.komunitasAktivitas?.adaDokumentasi || "-"}
                                         </p>
+                                        {currentEntry.komunitasAktivitas?.dokumentasiFiles &&
+                                            currentEntry.komunitasAktivitas.dokumentasiFiles.length > 0 && (
+                                            <div className="mt-2">
+                                                <span className="text-gray-500 text-sm">File Dokumentasi:</span>
+                                                <div className="mt-1 space-y-1">
+                                                    {currentEntry.komunitasAktivitas.dokumentasiFiles.map((file, idx) => (
+                                                        <a
+                                                            key={idx}
+                                                            href={file}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
+                                                        >
+                                                            📎 {file.split("/").pop()}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -779,13 +821,32 @@ export default function SurveyDetailPage({
                                             {currentEntry.alatProduksi?.standardisasiAlat || "-"}
                                         </p>
                                     </div>
-                                    <div>
+                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                             Dokumentasi Alat
                                         </h4>
                                         <p className="text-gray-800">
                                             {renderArrayField(currentEntry.alatProduksi?.dokumentasiAlat)}
                                         </p>
+                                        {currentEntry.alatProduksi?.dokumentasiFiles &&
+                                            currentEntry.alatProduksi.dokumentasiFiles.length > 0 && (
+                                            <div className="mt-2">
+                                                <span className="text-gray-500 text-sm">File Dokumentasi:</span>
+                                                <div className="mt-1 space-y-1">
+                                                    {currentEntry.alatProduksi.dokumentasiFiles.map((file, idx) => (
+                                                        <a
+                                                            key={idx}
+                                                            href={file}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
+                                                        >
+                                                            📎 {file.split("/").pop()}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -826,13 +887,32 @@ export default function SurveyDetailPage({
                                             )}
                                         </p>
                                     </div>
-                                    <div>
+                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                             Bukti Dukungan
                                         </h4>
                                         <p className="text-gray-800">
                                             {renderArrayField(currentEntry.peranPemda?.buktiDukungan)}
                                         </p>
+                                        {currentEntry.peranPemda?.buktiFiles &&
+                                            currentEntry.peranPemda.buktiFiles.length > 0 && (
+                                            <div className="mt-2">
+                                                <span className="text-gray-500 text-sm">File Bukti:</span>
+                                                <div className="mt-1 space-y-1">
+                                                    {currentEntry.peranPemda.buktiFiles.map((file, idx) => (
+                                                        <a
+                                                            key={idx}
+                                                            href={file}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
+                                                        >
+                                                            📎 {file.split("/").pop()}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

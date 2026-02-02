@@ -189,6 +189,7 @@ function ensureDefaults(data: any) {
         kategoriOther: "",
         kontak: "",
         adaBukti: "",
+        buktiFiles: [],
     };
 
     const defaultSDM = {
@@ -206,6 +207,7 @@ function ensureDefaults(data: any) {
         jenisKegiatan: [],
         jenisKegiatanOther: "",
         adaDokumentasi: "",
+        dokumentasiFiles: [],
     };
 
     const defaultAlatProduksi = {
@@ -215,6 +217,7 @@ function ensureDefaults(data: any) {
         kondisiAlat: "",
         standardisasiAlat: "",
         dokumentasiAlat: [],
+        dokumentasiFiles: [],
     };
 
     const defaultPeranPemda = {
@@ -224,6 +227,7 @@ function ensureDefaults(data: any) {
         bentukDukungan: [],
         bentukDukunganOther: "",
         buktiDukungan: [],
+        buktiFiles: [],
     };
 
     const defaultKondisiKepengurusan = {

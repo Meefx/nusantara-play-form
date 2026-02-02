@@ -84,6 +84,7 @@ export default function Section2Form() {
           kategoriOther: data.kategoriPakarOther,
           kontak: data.kontakPakar,
           adaBukti: data.adaBukti,
+          buktiFiles: data.buktiFiles || [],
         },
       },
       komunitasAktivitas: {
@@ -95,6 +96,7 @@ export default function Section2Form() {
         jenisKegiatan: data.jenisKegiatan,
         jenisKegiatanOther: data.jenisKegiatanOther,
         adaDokumentasi: data.adaDokumentasi,
+        dokumentasiFiles: data.dokumentasiFiles || [],
       },
       alatProduksi: {
         adaPengrajin: data.adaPengrajin,
@@ -103,6 +105,7 @@ export default function Section2Form() {
         kondisiAlat: data.kondisiAlat,
         standardisasiAlat: data.standardisasiAlat,
         dokumentasiAlat: data.dokumentasiAlat,
+        dokumentasiFiles: data.dokumentasiAlatFiles || [],
       },
       peranPemda: {
         adaPeran: data.peranPemda,
@@ -111,6 +114,7 @@ export default function Section2Form() {
         bentukDukungan: data.bentukDukungan,
         bentukDukunganOther: data.bentukDukunganOther,
         buktiDukungan: data.buktiDukungan,
+        buktiFiles: data.buktiDukunganFiles || [],
       },
       kondisiKepengurusan: {
         perkembangan: data.perkembangan,
