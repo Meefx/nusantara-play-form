@@ -1,10 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import QuestionCard from "./QuestionCard";
 import RadioGroup from "./RadioGroup";
 import InputField from "./InputField";
+import SearchableDropdown from "./SearchableDropdown";
+import {
+  loadProvinsiData,
+  loadKabupatenData,
+  loadKecamatanData,
+  loadDesaData,
+  getKabupatenByProvinsi,
+  getKecamatanByKabupaten,
+  getDesaByKecamatan,
+  CSVProvinsi,
+  CSVKabupaten,
+  CSVKecamatan,
+  CSVDesa
+} from "@/lib/csvLoader";
 
 interface Section1Data {
   role: string;
@@ -35,6 +49,50 @@ export default function Section1Form() {
     jumlahPROT: "",
     jumlahPROTOther: ""
   });
+
+  // State untuk data wilayah
+  const [provinsiList, setProvinsiList] = useState<CSVProvinsi[]>([]);
+  const [kabupatenList, setKabupatenList] = useState<CSVKabupaten[]>([]);
+  const [kecamatanList, setKecamatanList] = useState<CSVKecamatan[]>([]);
+  const [desaList, setDesaList] = useState<CSVDesa[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load data CSV saat component mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setIsLoading(true);
+        const [provinsi, kabupaten, kecamatan, desa] = await Promise.all([
+          loadProvinsiData(),
+          loadKabupatenData(),
+          loadKecamatanData(),
+          loadDesaData()
+        ]);
+        setProvinsiList(provinsi);
+        setKabupatenList(kabupaten);
+        setKecamatanList(kecamatan);
+        setDesaList(desa);
+      } catch (error) {
+        console.error("Error loading wilayah data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Get filtered options
+  const kabupatenOptions = formData.provinsi
+    ? getKabupatenByProvinsi(kabupatenList, formData.provinsi)
+    : [];
+  
+  const kecamatanOptions = formData.kabKota
+    ? getKecamatanByKabupaten(kecamatanList, formData.kabKota)
+    : [];
+  
+  const desaOptions = formData.kecamatan
+    ? getDesaByKecamatan(desaList, formData.kecamatan)
+    : [];
 
   const roleOptions = [
     { value: "provinsi", label: "Pengurus/Koordinator PR-OT tingkat Provinsi" },
@@ -81,32 +139,76 @@ export default function Section1Form() {
         required={true}
         icon="📍"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField
-            label="Provinsi"
-            value={formData.provinsi}
-            onChange={(value) => setFormData({ ...formData, provinsi: value })}
-            placeholder="Contoh: Jawa Barat"
-          />
-          <InputField
-            label="Kab/Kota"
-            value={formData.kabKota}
-            onChange={(value) => setFormData({ ...formData, kabKota: value })}
-            placeholder="Contoh: Kota Bandung"
-          />
-          <InputField
-            label="Kecamatan"
-            value={formData.kecamatan}
-            onChange={(value) => setFormData({ ...formData, kecamatan: value })}
-            placeholder="Contoh: Coblong"
-          />
-          <InputField
-            label="Desa/Kelurahan"
-            value={formData.desaKelurahan}
-            onChange={(value) => setFormData({ ...formData, desaKelurahan: value })}
-            placeholder="Contoh: Dago"
-          />
-        </div>
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-gray-600">Memuat data wilayah...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SearchableDropdown
+              label="Provinsi"
+              value={formData.provinsi}
+              options={provinsiList.map(p => ({ value: p.code, label: p.name }))}
+              onChange={(value) => {
+                setFormData({ 
+                  ...formData, 
+                  provinsi: value,
+                  kabKota: "",
+                  kecamatan: "",
+                  desaKelurahan: ""
+                });
+              }}
+              placeholder="Pilih atau cari provinsi"
+            />
+            <SearchableDropdown
+              label="Kab/Kota"
+              value={formData.kabKota}
+              options={kabupatenOptions.map(k => ({ 
+                value: k.code, 
+                label: k.name 
+              }))}
+              onChange={(value) => {
+                setFormData({ 
+                  ...formData, 
+                  kabKota: value,
+                  kecamatan: "",
+                  desaKelurahan: ""
+                });
+              }}
+              placeholder="Pilih atau cari kab/kota"
+              disabled={!formData.provinsi}
+            />
+            <SearchableDropdown
+              label="Kecamatan"
+              value={formData.kecamatan}
+              options={kecamatanOptions.map(kec => ({ 
+                value: kec.code, 
+                label: kec.name 
+              }))}
+              onChange={(value) => {
+                setFormData({ 
+                  ...formData, 
+                  kecamatan: value,
+                  desaKelurahan: ""
+                });
+              }}
+              placeholder="Pilih atau cari kecamatan"
+              disabled={!formData.kabKota}
+            />
+            <SearchableDropdown
+              label="Desa/Kelurahan"
+              value={formData.desaKelurahan}
+              options={desaOptions.map(desa => ({ 
+                value: desa.code, 
+                label: desa.name 
+              }))}
+              onChange={(value) => setFormData({ ...formData, desaKelurahan: value })}
+              placeholder="Pilih atau cari desa/kelurahan"
+              disabled={!formData.kecamatan}
+            />
+          </div>
+        )}
       </QuestionCard>
 
       {/* Question 3 */}
