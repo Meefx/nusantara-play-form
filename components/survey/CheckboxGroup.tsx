@@ -11,6 +11,7 @@ interface CheckboxGroupProps {
   hasOther?: boolean;
   otherValue?: string;
   onOtherChange?: (value: string) => void;
+  otherLabel?: string;
 }
 
 export default function CheckboxGroup({
@@ -20,7 +21,8 @@ export default function CheckboxGroup({
   onChange,
   hasOther = false,
   otherValue = "",
-  onOtherChange
+  onOtherChange,
+  otherLabel = "Lainnya:"
 }: CheckboxGroupProps) {
   const handleCheckboxChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -60,7 +62,7 @@ export default function CheckboxGroup({
             onChange={(e) => handleCheckboxChange("other", e.target.checked)}
             className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer mt-1"
           />
-          <div className="ml-3 flex-1">
+          <div className="ml-3 flex-1">{otherLabel}
             <span className="text-gray-700 group-hover:text-blue-700 font-medium">Lainnya:</span>
             <input
               type="text"

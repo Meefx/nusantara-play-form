@@ -21,15 +21,12 @@ import {
 } from "@/lib/csvLoader";
 
 interface Section1Data {
-  role: string;
-  roleOther: string;
-  provinsi: string;
-  kabKota: string;
-  kecamatan: string;
-  desaKelurahan: string;
+  kategoriResponden: string;
   namaLengkap: string;
   nomorHP: string;
-  instansi: string;
+  email: string;
+  provinsi: string;
+  kabKota: string;
   jumlahPROT: string;
   jumlahPROTOther: string;
 }
@@ -37,15 +34,12 @@ interface Section1Data {
 export default function Section1Form() {
   const router = useRouter();
   const [formData, setFormData] = useState<Section1Data>({
-    role: "",
-    roleOther: "",
-    provinsi: "",
-    kabKota: "",
-    kecamatan: "",
-    desaKelurahan: "",
+    kategoriResponden: "",
     namaLengkap: "",
     nomorHP: "",
-    instansi: "",
+    email: "",
+    provinsi: "",
+    kabKota: "",
     jumlahPROT: "",
     jumlahPROTOther: ""
   });
@@ -85,21 +79,12 @@ export default function Section1Form() {
   const kabupatenOptions = formData.provinsi
     ? getKabupatenByProvinsi(kabupatenList, formData.provinsi)
     : [];
-  
-  const kecamatanOptions = formData.kabKota
-    ? getKecamatanByKabupaten(kecamatanList, formData.kabKota)
-    : [];
-  
-  const desaOptions = formData.kecamatan
-    ? getDesaByKecamatan(desaList, formData.kecamatan)
-    : [];
 
-  const roleOptions = [
-    { value: "provinsi", label: "Pengurus/Koordinator PR-OT tingkat Provinsi" },
-    { value: "kabkota", label: "Pengurus/Koordinator PR-OT tingkat Kab/Kota" },
-    { value: "kecamatan", label: "Pengurus/Koordinator PR-OT tingkat Kecamatan/Desa" },
-    { value: "perangkat", label: "Perangkat Desa/Kelurahan (mitra pengurus daerah)" },
-    { value: "pemda", label: "Pemda/Instansi pembina (Dispora/Dikbud/Dispar/dll.)" }
+  const kategoriRespondenOptions = [
+    { value: "pengurus_kpoti", label: "Pengurus KPOTI tingkat Provinsi/Kab/Kota" },
+    { value: "penggiat_prot", label: "Penggiat PR-OT tingkat Provinsi/Kab/Kota/Kecamatan/Desa" },
+    { value: "pemda", label: "Pemerintah Daerah (Dispora/Dikbud/Dispar/dll.)" },
+    { value: "pegiat_prot", label: "Pegiat PR-OT" }
   ];
 
   const jumlahOptions = [
@@ -113,132 +98,93 @@ export default function Section1Form() {
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-blue-600 to-red-500 text-white py-6 px-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl md:text-3xl font-bold">SECTION 1 - Identitas Pengurus Daerah</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">SECTION 1 - Informasi Responden</h2>
       </div>
 
-      {/* Question 1 */}
+      {/* Question 1: Kategori Responden */}
       <QuestionCard
-        title="Anda mengisi kuesioner ini sebagai"
+        title="Kategori Responden"
         required={true}
         icon="👤"
       >
         <RadioGroup
-          name="role"
-          options={roleOptions}
-          value={formData.role}
-          onChange={(value) => setFormData({ ...formData, role: value })}
-          hasOther={true}
-          otherValue={formData.roleOther}
-          onOtherChange={(value) => setFormData({ ...formData, roleOther: value })}
+          name="kategoriResponden"
+          options={kategoriRespondenOptions}
+          value={formData.kategoriResponden}
+          onChange={(value) => setFormData({ ...formData, kategoriResponden: value })}
+          hasOther={false}
         />
       </QuestionCard>
 
-      {/* Question 2 */}
+      {/* Question 2: Kontak Responden */}
       <QuestionCard
-        title="Wilayah kerja pengurus yang Anda input"
-        required={true}
-        icon="📍"
-      >
-        {isLoading ? (
-          <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600">Memuat data wilayah...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SearchableDropdown
-              label="Provinsi"
-              value={formData.provinsi}
-              options={provinsiList.map(p => ({ value: p.code, label: p.name }))}
-              onChange={(value) => {
-                setFormData({ 
-                  ...formData, 
-                  provinsi: value,
-                  kabKota: "",
-                  kecamatan: "",
-                  desaKelurahan: ""
-                });
-              }}
-              placeholder="Pilih atau cari provinsi"
-            />
-            <SearchableDropdown
-              label="Kab/Kota"
-              value={formData.kabKota}
-              options={kabupatenOptions.map(k => ({ 
-                value: k.code, 
-                label: k.name 
-              }))}
-              onChange={(value) => {
-                setFormData({ 
-                  ...formData, 
-                  kabKota: value,
-                  kecamatan: "",
-                  desaKelurahan: ""
-                });
-              }}
-              placeholder="Pilih atau cari kab/kota"
-              disabled={!formData.provinsi}
-            />
-            <SearchableDropdown
-              label="Kecamatan"
-              value={formData.kecamatan}
-              options={kecamatanOptions.map(kec => ({ 
-                value: kec.code, 
-                label: kec.name 
-              }))}
-              onChange={(value) => {
-                setFormData({ 
-                  ...formData, 
-                  kecamatan: value,
-                  desaKelurahan: ""
-                });
-              }}
-              placeholder="Pilih atau cari kecamatan"
-              disabled={!formData.kabKota}
-            />
-            <SearchableDropdown
-              label="Desa/Kelurahan"
-              value={formData.desaKelurahan}
-              options={desaOptions.map(desa => ({ 
-                value: desa.code, 
-                label: desa.name 
-              }))}
-              onChange={(value) => setFormData({ ...formData, desaKelurahan: value })}
-              placeholder="Pilih atau cari desa/kelurahan"
-              disabled={!formData.kecamatan}
-            />
-          </div>
-        )}
-      </QuestionCard>
-
-      {/* Question 3 */}
-      <QuestionCard
-        title="Kontak pengisi (untuk verifikasi data)"
+        title="Kontak Responden (untuk verifikasi data)"
         required={true}
         icon="📞"
       >
-        <InputField
-          label="Nama lengkap"
-          value={formData.namaLengkap}
-          onChange={(value) => setFormData({ ...formData, namaLengkap: value })}
-          placeholder="Masukkan nama lengkap Anda"
-        />
-        <InputField
-          label="Nomor HP/WA"
-          value={formData.nomorHP}
-          onChange={(value) => setFormData({ ...formData, nomorHP: value })}
-          placeholder="Contoh: 081234567890"
-          type="tel"
-        />
-        <InputField
-          label="Instansi/Komunitas"
-          value={formData.instansi}
-          onChange={(value) => setFormData({ ...formData, instansi: value })}
-          placeholder="Masukkan nama instansi atau komunitas"
-        />
+        <div className="space-y-4">
+          <InputField
+            label="Nama lengkap"
+            value={formData.namaLengkap}
+            onChange={(value) => setFormData({ ...formData, namaLengkap: value })}
+            placeholder="Masukkan nama lengkap Anda"
+          />
+          <InputField
+            label="Nomor HP/WA"
+            value={formData.nomorHP}
+            onChange={(value) => setFormData({ ...formData, nomorHP: value })}
+            placeholder="Contoh: 081234567890"
+            type="tel"
+          />
+          <InputField
+            label="Email Aktif"
+            value={formData.email}
+            onChange={(value) => setFormData({ ...formData, email: value })}
+            placeholder="Contoh: email@example.com"
+            type="email"
+          />
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-gray-600">Memuat data wilayah...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SearchableDropdown
+                label="Provinsi"
+                value={formData.provinsi}
+                options={provinsiList.map(p => ({ value: p.code, label: p.name }))}
+                onChange={(value) => {
+                  setFormData({ 
+                    ...formData, 
+                    provinsi: value,
+                    kabKota: ""
+                  });
+                }}
+                placeholder="Pilih atau cari provinsi"
+              />
+              <SearchableDropdown
+                label="Kabupaten/Kota"
+                value={formData.kabKota}
+                options={kabupatenOptions.map(k => ({ 
+                  value: k.code, 
+                  label: k.name 
+                }))}
+                onChange={(value) => {
+                  setFormData({ 
+                    ...formData, 
+                    kabKota: value
+                  });
+                }}
+                placeholder="Pilih atau cari kabupaten/kota"
+                disabled={!formData.provinsi}
+              />
+            </div>
+          )}
+        </div>
       </QuestionCard>
 
-      {/* Question 4 */}
+      {/* Question 3: Jumlah PR/OT */}
       <QuestionCard
         title="Berapa jumlah PR/OT yang akan Anda input pada Section 2?"
         required={true}
@@ -252,6 +198,7 @@ export default function Section1Form() {
           hasOther={true}
           otherValue={formData.jumlahPROTOther}
           onOtherChange={(value) => setFormData({ ...formData, jumlahPROTOther: value })}
+          otherLabel="Lainnya:"
         />
       </QuestionCard>
 
@@ -269,18 +216,13 @@ export default function Section1Form() {
           onClick={() => {
             // Simpan data Section 1 ke localStorage
             const section1Data = {
-              role: formData.role,
-              roleOther: formData.roleOther,
-              wilayahKerja: {
-                provinsi: formData.provinsi,
-                kabKota: formData.kabKota,
-                kecamatan: formData.kecamatan,
-                desaKelurahan: formData.desaKelurahan,
-              },
-              kontak: {
+              kategoriResponden: formData.kategoriResponden,
+              kontakResponden: {
                 namaLengkap: formData.namaLengkap,
                 nomorHP: formData.nomorHP,
-                instansi: formData.instansi,
+                email: formData.email,
+                provinsi: formData.provinsi,
+                kabKota: formData.kabKota,
               },
               jumlahPROT: formData.jumlahPROT,
               jumlahPROTOther: formData.jumlahPROTOther,

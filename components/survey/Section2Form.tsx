@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Section2Entry, { Section2Data } from "./Section2Entry";
 
@@ -13,8 +13,18 @@ export default function Section2Form() {
   const router = useRouter();
   const [entries, setEntries] = useState<number[]>([1]);
   const [entriesData, setEntriesData] = useState<Map<number, Section2Data>>(new Map());
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [currentSurveyIndex, setCurrentSurveyIndex] = useState<number>(0);
+  const [totalSurveys, setTotalSurveys] = useState<number>(0);
+
+  // Load saved surveys on mount
+  useEffect(() => {
+    const savedSurveys = localStorage.getItem('savedSurveys');
+    if (savedSurveys) {
+      const surveys = JSON.parse(savedSurveys);
+      setTotalSurveys(surveys.length);
+      setCurrentSurveyIndex(surveys.length);
+    }
+  }, []);
 
   const addEntry = () => {
     const newId = entries.length > 0 ? Math.max(...entries) + 1 : 1;
@@ -43,168 +53,96 @@ export default function Section2Form() {
   const transformEntryData = (data: Section2Data, entryNumber: number) => {
     return {
       entryNumber,
-      identitas: {
-        kategori: data.kategori,
-        namaPROT: data.namaPROT,
-        adaNamaLain: data.adaNamaLain,
-        variasiNama: data.variasiNama,
-        lokasi: {
-          jenis: data.lokasi,
-          lokasiOther: data.lokasiOther,
-          kelengkapanLokasi: data.kelengkapanLokasi,
-          alamatLengkap: data.alamatLengkap,
-          koordinatGPS: data.koordinatGPS,
-        },
+      namaPROT: data.namaPROT,
+      jenisKategori: data.jenisKategori,
+      statusAsalUsul: data.statusAsalUsul,
+      lokasi: {
+        provinsi: data.lokasiProvinsi,
+        kabKota: data.lokasiKabKota,
+        kecamatan: data.lokasiKecamatan,
+        desa: data.lokasiDesa,
+        alamatLengkap: data.alamatLengkap,
       },
-      aturan: {
-        statusAturan: data.statusAturan,
-        sumberRujukan: data.sumberRujukan,
-        sumberRujukanOther: data.sumberRujukanOther,
-        ringkasanAturan: data.ringkasanAturan,
-        adaVariasiAturan: data.adaVariasiAturan,
-        jelaskanVariasi: data.jelaskanVariasi,
+      koordinator: {
+        nama: data.koordinatorNama,
+        hp: data.koordinatorHP,
+        email: data.koordinatorEmail,
       },
-      sdm: {
-        koordinator: {
-          ada: data.adaKoordinator,
-          peran: data.peranKoordinator,
-          peranOther: data.peranKoordinatorOther,
-          cakupan: data.cakupanKoordinator,
-          kontak: data.kontakKoordinator,
-        },
-        pelatih: {
-          status: data.statusPelatih,
-          level: data.levelPelatih,
-          kontak: data.kontakPelatih,
-          jadwalLatihan: data.jadwalLatihan,
-        },
-        pakar: {
-          ada: data.adaPakar,
-          kategori: data.kategoriPakar,
-          kategoriOther: data.kategoriPakarOther,
-          kontak: data.kontakPakar,
-          adaBukti: data.adaBukti,
-          buktiFiles: data.buktiFiles || [],
-        },
+      pelatih: {
+        nama: data.pelatihNama,
+        hp: data.pelatihHP,
+        email: data.pelatihEmail,
       },
-      komunitasAktivitas: {
-        adaKomunitas: data.adaKomunitas,
-        bentukKomunitas: data.bentukKomunitas,
-        bentukKomunitasOther: data.bentukKomunitasOther,
-        statusKeaktifan: data.statusKeaktifan,
-        frekuensiKegiatan: data.frekuensiKegiatan,
-        jenisKegiatan: data.jenisKegiatan,
-        jenisKegiatanOther: data.jenisKegiatanOther,
-        adaDokumentasi: data.adaDokumentasi,
-        dokumentasiFiles: data.dokumentasiFiles || [],
-      },
-      alatProduksi: {
-        adaPengrajin: data.adaPengrajin,
-        skalaProduksi: data.skalaProduksi,
-        kepemilikanAlat: data.kepemilikanAlat,
-        kondisiAlat: data.kondisiAlat,
-        standardisasiAlat: data.standardisasiAlat,
-        dokumentasiAlat: data.dokumentasiAlat,
-        dokumentasiFiles: data.dokumentasiAlatFiles || [],
-      },
-      peranPemda: {
-        adaPeran: data.peranPemda,
-        bentukPeran: data.bentukPeranPemda,
-        bentukPeranOther: data.bentukPeranPemdaOther,
-        bentukDukungan: data.bentukDukungan,
-        bentukDukunganOther: data.bentukDukunganOther,
-        buktiDukungan: data.buktiDukungan,
-        buktiFiles: data.buktiDukunganFiles || [],
-      },
-      kondisiKepengurusan: {
-        perkembangan: data.perkembangan,
-        indikatorPerkembangan: data.indikatorPerkembangan,
-        indikatorPerkembanganOther: data.indikatorPerkembanganOther,
-        kegiatanBerjalan: data.kegiatanBerjalan,
-        kegiatanBerjalanOther: data.kegiatanBerjalanOther,
-        statusProgram: data.statusProgram,
-        kendala: data.kendala,
-        kendalaOther: data.kendalaOther,
-        dampakKendala: data.dampakKendala,
-        catatanTambahan: data.catatanTambahan,
-      },
+      peralatanPROT: data.peralatanPROT,
+      caraBermain: data.caraBermain,
+      nilaiMoral: data.nilaiMoral,
     };
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      // Get Section 1 data from localStorage
-      const section1Raw = localStorage.getItem('surveySection1');
-      if (!section1Raw) {
-        throw new Error('Data Section 1 tidak ditemukan. Silakan kembali ke Section 1.');
+  const loadSurvey = (index: number) => {
+    const savedSurveys = localStorage.getItem('savedSurveys');
+    if (savedSurveys) {
+      const surveys = JSON.parse(savedSurveys);
+      if (surveys[index]) {
+        // Load data from saved survey
+        localStorage.setItem('surveySection2', surveys[index].section2);
+        localStorage.setItem('surveySection3', surveys[index].section3);
+        localStorage.setItem('surveySection4', surveys[index].section4);
+        localStorage.setItem('surveySection5', surveys[index].section5);
+        setCurrentSurveyIndex(index);
+        // Refresh page to load data
+        window.location.reload();
       }
-      const section1 = JSON.parse(section1Raw);
-
-      // Transform Section 2 entries data
-      const section2Entries = entries.map((entryId, index) => {
-        const data = entriesData.get(entryId);
-        if (data) {
-          return transformEntryData(data, index + 1);
-        }
-        return null;
-      }).filter(Boolean);
-
-      // Build complete survey data
-      const surveyData = {
-        status: "completed",
-        section1,
-        section2: {
-          entries: section2Entries,
-        },
-      };
-
-      // Submit to API
-      const response = await fetch('/api/survey', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(surveyData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Gagal menyimpan survey');
-      }
-
-      // Clear localStorage after successful submission
-      localStorage.removeItem('surveySection1');
-
-      // Show success and redirect
-      alert('✅ Survey berhasil disimpan!');
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Error submitting survey:', error);
-      setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan survey');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-blue-600 to-red-500 text-white py-6 px-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl md:text-3xl font-bold mb-2">
-          SECTION 2 - Entri Pemetaan PR/OT
-        </h2>
-        <p className="text-white/90">
-          Isi Blok Pertanyaan berikut untuk setiap PR/OT. Jika PR/OT yang Anda input lebih dari 1, tambahkan entri baru dengan tombol di bawah.
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+              SECTION 2 - Inventarisasi PR/OT
+            </h2>
+            <p className="text-white/90">
+              Isi informasi berikut untuk setiap PR/OT. Jika PR/OT yang Anda input lebih dari 1, tambahkan entri baru dengan tombol di bawah.
+            </p>
+          </div>
+          {totalSurveys > 0 && (
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+              <p className="text-white font-bold text-lg">Survey PR/OT #{currentSurveyIndex + 1}</p>
+              {totalSurveys > 0 && (
+                <p className="text-white/90 text-sm">{totalSurveys} survey tersimpan</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Error Message */}
-      {submitError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-          <strong>Error:</strong> {submitError}
+      {/* Navigation to Previous Surveys */}
+      {totalSurveys > 0 && (
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-800 font-semibold mb-1">📋 Survey Sebelumnya</p>
+              <p className="text-sm text-blue-600">Klik untuk melihat atau edit survey yang sudah diisi</p>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {Array.from({ length: totalSurveys }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => loadSurvey(i)}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                    currentSurveyIndex === i
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-blue-600 hover:bg-blue-100 border border-blue-300'
+                  }`}
+                >
+                  PR/OT #{i + 1}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -219,17 +157,6 @@ export default function Section2Form() {
         />
       ))}
 
-      {/* Add Entry Button */}
-      <div className="flex justify-center pt-4">
-        <button
-          type="button"
-          onClick={addEntry}
-          className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-200 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2"
-        >
-          ➕ Tambah Entri PR/OT Baru
-        </button>
-      </div>
-
       {/* Navigation Buttons */}
       <div className="flex justify-between items-center pt-8">
         <button
@@ -241,14 +168,22 @@ export default function Section2Form() {
         </button>
         <button
           type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className={`px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${isSubmitting
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:from-blue-700 hover:to-orange-600'
-            }`}
+          onClick={() => {
+            // Simpan data Section 2 ke localStorage
+            const section2Entries = entries.map((entryId, index) => {
+              const data = entriesData.get(entryId);
+              if (data) {
+                return transformEntryData(data, index + 1);
+              }
+              return null;
+            }).filter(Boolean);
+            
+            localStorage.setItem('surveySection2', JSON.stringify({ entries: section2Entries }));
+            router.push('/survey/section3');
+          }}
+          className="px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg hover:from-blue-700 hover:to-orange-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
-          {isSubmitting ? '⏳ Menyimpan...' : '✅ Selesai & Simpan'}
+          Lanjut ke Section 3 →
         </button>
       </div>
     </div>
