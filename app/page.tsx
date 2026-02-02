@@ -2,7 +2,15 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-red-500 to-orange-500 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-red-500 to-orange-500 flex items-center justify-center p-4 relative">
+      {/* Management Button - Top Right */}
+      <Link
+        href="/management/dashboard"
+        className="absolute top-6 right-6 px-6 py-3 bg-white text-blue-600 rounded-full font-bold text-base hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform flex items-center gap-2"
+      >
+        🎯 Management
+      </Link>
+
       <main className="text-center text-white max-w-3xl mx-auto">
         <div className="animate-fade-in">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
