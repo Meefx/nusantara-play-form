@@ -5,32 +5,81 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Survey {
-    _id: string;
+    id: string;
+    _id?: string;
     status: string;
     submittedAt: string;
-    createdAt: string;
+    updatedAt: string;
     section1: {
-        role: string;
-        wilayahKerja: {
-            provinsi: string;
-            kabKota: string;
-            kecamatan: string;
-            desaKelurahan: string;
-        };
-        kontak: {
+        kategoriResponden: string;
+        kontakResponden: {
             namaLengkap: string;
             nomorHP: string;
-            instansi: string;
+            email: string;
+            provinsi: string;
+            kabKota: string;
         };
+        jumlahPROT: string;
+        jumlahPROTOther: string;
     };
     section2: {
         entries: Array<{
             entryNumber: number;
-            identitas: {
-                namaPROT: string;
-                kategori: string;
+            namaPROT: string;
+            jenisKategori: string;
+            statusAsalUsul: string;
+            lokasi: {
+                provinsi: string;
+                kabKota: string;
+                kecamatan: string;
+                desa: string;
+                alamatLengkap: string;
             };
+            koordinator: {
+                nama: string;
+                hp: string;
+                email: string;
+            };
+            pelatih: {
+                nama: string;
+                hp: string;
+                email: string;
+            };
+            peralatanPROT: string;
+            caraBermain: string;
+            nilaiMoral: string;
         }>;
+    };
+    section3?: {
+        frekuensiDimainkan: string;
+        frekuensiOther: string;
+        targetUsia: string;
+        jumlahPenggiat: string;
+        ketersediaanLahan: string;
+        ketersediaanLahanOther: string;
+        partisipasiSekolah: string;
+        partisipasiSekolahOther: string;
+        penghargaanJuara: string;
+        penghargaanJuaraOther: string;
+    };
+    section4?: {
+        produksiAlat: string;
+        hargaAlat: string;
+        dayaTarikWisata: string;
+        kerjasamaUMKM: string;
+        penyerapanTenagaKerja: string;
+    };
+    section5?: {
+        hambatanUtama: string[];
+        hambatanUtamaOther: string;
+        kebutuhanMendesak: string[];
+        kebutuhanMendesakOther: string;
+        harapanKPOTI: string;
+    };
+    section6?: {
+        fotoAlat: string[];
+        fotoKegiatan: string[];
+        videoPROT: string[];
     };
 }
 
@@ -92,12 +141,7 @@ export default function ManagementDashboard() {
             const result = await response.json();
 
             if (result.success) {
-                // Convert _id to string untuk memastikan tidak undefined
-                const surveysWithStringId = result.data.map((survey: any) => ({
-                    ...survey,
-                    _id: survey._id?.toString() || survey.id?.toString() || ""
-                }));
-                setSurveys(surveysWithStringId);
+                setSurveys(result.data);
                 setPagination(result.pagination);
             }
         } catch (error) {
@@ -160,6 +204,62 @@ export default function ManagementDashboard() {
             default:
                 return kategori;
         }
+    };
+
+    const getKategoriRespondenLabel = (kategori: string) => {
+        switch (kategori) {
+            case "pengurus_kpoti":
+                return "Pengurus KPOTI";
+            case "pelatih":
+                return "Pelatih";
+            case "atlet":
+                return "Atlet";
+            case "masyarakat_umum":
+                return "Masyarakat Umum";
+            default:
+                return kategori;
+        }
+    };
+
+    // Helper untuk mendapatkan nama provinsi (simplified mapping)
+    const getProvinsiName = (kode: string) => {
+        const provinsiMap: Record<string, string> = {
+            "11": "Aceh",
+            "12": "Sumatera Utara",
+            "13": "Sumatera Barat",
+            "14": "Riau",
+            "15": "Jambi",
+            "16": "Sumatera Selatan",
+            "17": "Bengkulu",
+            "18": "Lampung",
+            "19": "Kepulauan Bangka Belitung",
+            "21": "Kepulauan Riau",
+            "31": "DKI Jakarta",
+            "32": "Jawa Barat",
+            "33": "Jawa Tengah",
+            "34": "DI Yogyakarta",
+            "35": "Jawa Timur",
+            "36": "Banten",
+            "51": "Bali",
+            "52": "Nusa Tenggara Barat",
+            "53": "Nusa Tenggara Timur",
+            "61": "Kalimantan Barat",
+            "62": "Kalimantan Tengah",
+            "63": "Kalimantan Selatan",
+            "64": "Kalimantan Timur",
+            "65": "Kalimantan Utara",
+            "71": "Sulawesi Utara",
+            "72": "Sulawesi Tengah",
+            "73": "Sulawesi Selatan",
+            "74": "Sulawesi Tenggara",
+            "75": "Gorontalo",
+            "76": "Sulawesi Barat",
+            "81": "Maluku",
+            "82": "Maluku Utara",
+            "91": "Papua Barat",
+            "94": "Papua",
+        };
+        return provinsiMap[kode] || kode;
     };
 
     if (!isAuthenticated) {
@@ -317,24 +417,29 @@ export default function ManagementDashboard() {
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         {surveys.map((survey) => (
-                                            <tr key={survey._id} className="hover:bg-gray-50">
+                                            <tr key={survey.id || survey._id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">
                                                     <div>
                                                         <p className="font-medium text-gray-900">
-                                                            {survey.section1?.kontak?.namaLengkap || "-"}
+                                                            {survey.section1?.kontakResponden?.namaLengkap || "-"}
+
                                                         </p>
                                                         <p className="text-sm text-gray-500">
-                                                            {survey.section1?.kontak?.nomorHP || "-"}
+                                                            {survey.section1?.kontakResponden?.nomorHP || "-"}
+
+                                                        </p>
+                                                        <p className="text-xs text-gray-400">
+                                                            {getKategoriRespondenLabel(survey.section1?.kategoriResponden || "")}
                                                         </p>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div>
                                                         <p className="text-sm text-gray-900">
-                                                            {survey.section1?.wilayahKerja?.provinsi || "-"}
+                                                            {getProvinsiName(survey.section1?.kontakResponden?.provinsi || "")}
                                                         </p>
                                                         <p className="text-sm text-gray-500">
-                                                            {survey.section1?.wilayahKerja?.kabKota || "-"}
+                                                            {survey.section1?.kontakResponden?.kabKota || "-"}
                                                         </p>
                                                     </div>
                                                 </td>
@@ -345,10 +450,10 @@ export default function ManagementDashboard() {
                                                             .map((entry, idx) => (
                                                                 <div key={idx}>
                                                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                        {entry.identitas?.namaPROT || `Entry ${entry.entryNumber}`}
+                                                                        {entry.namaPROT || `Entry ${entry.entryNumber}`}
                                                                     </span>
                                                                     <span className="text-xs text-gray-500 ml-1">
-                                                                        ({getKategoriLabel(entry.identitas?.kategori || "")})
+                                                                        ({getKategoriLabel(entry.jenisKategori || "")})
                                                                     </span>
                                                                 </div>
                                                             ))}
@@ -361,27 +466,28 @@ export default function ManagementDashboard() {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${survey.status === "completed"
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                            survey.status === "completed"
                                                                 ? "bg-green-100 text-green-800"
                                                                 : "bg-yellow-100 text-yellow-800"
-                                                            }`}
+                                                        }`}
                                                     >
                                                         {survey.status === "completed" ? "✅ Completed" : "📝 Draft"}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-500">
-                                                    {formatDate(survey.submittedAt || survey.createdAt)}
+                                                    {formatDate(survey.submittedAt)}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center justify-center gap-2">
                                                         <Link
-                                                            href={`/management/survey/${survey._id}`}
+                                                            href={`/management/survey/${survey.id || survey._id}`}
                                                             className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
                                                         >
                                                             👁️ Detail
                                                         </Link>
                                                         <button
-                                                            onClick={() => handleDelete(survey._id)}
+                                                            onClick={() => handleDelete(survey.id || survey._id || "")}
                                                             className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
                                                         >
                                                             🗑️ Hapus
@@ -406,10 +512,11 @@ export default function ManagementDashboard() {
                                         <button
                                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                             disabled={!pagination.hasPrevPage}
-                                            className={`px-4 py-2 rounded-lg font-medium ${pagination.hasPrevPage
+                                            className={`px-4 py-2 rounded-lg font-medium ${
+                                                pagination.hasPrevPage
                                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                                }`}
+                                            }`}
                                         >
                                             ← Prev
                                         </button>
@@ -419,10 +526,11 @@ export default function ManagementDashboard() {
                                         <button
                                             onClick={() => setCurrentPage((p) => p + 1)}
                                             disabled={!pagination.hasNextPage}
-                                            className={`px-4 py-2 rounded-lg font-medium ${pagination.hasNextPage
+                                            className={`px-4 py-2 rounded-lg font-medium ${
+                                                pagination.hasNextPage
                                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                                }`}
+                                            }`}
                                         >
                                             Next →
                                         </button>

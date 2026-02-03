@@ -175,8 +175,9 @@ export default function Section6Form() {
       localStorage.removeItem('surveySection5');
       localStorage.removeItem('savedSurveys');
 
-      // Show success message
-      setIsSuccess(true);
+      // Show success message and redirect to home
+      alert(`✅ Berhasil! Semua survey (${savedSurveys.length} PR/OT) telah tersimpan. Terima kasih atas partisipasi Anda!`);
+      router.push('/');
     } catch (error) {
       console.error('Error submitting survey:', error);
       setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan survey');
@@ -279,15 +280,7 @@ export default function Section6Form() {
             <div>
               <h3 className="font-bold text-lg mb-1">Semua Survey Berhasil Disimpan!</h3>
               <p className="text-green-700">Total {totalSavedSurveys + 1} survey PR/OT telah tersimpan di database.</p>
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={() => router.push('/management/dashboard')}
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                >
-                  📊 Ke Dashboard
-                </button>
-              </div>
+              <p className="text-green-600 mt-2">Terima kasih atas partisipasi Anda!</p>
             </div>
           </div>
         </div>
