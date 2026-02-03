@@ -121,139 +121,89 @@ export async function GET(request: NextRequest) {
 // Helper function to ensure nested objects have default values
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ensureDefaults(data: any) {
-    const defaultWilayahKerja = {
-        provinsi: "",
-        kabKota: "",
-        kecamatan: "",
-        desaKelurahan: "",
-    };
-
-    const defaultKontak = {
+    // Section 1 defaults
+    const defaultKontakResponden = {
         namaLengkap: "",
         nomorHP: "",
-        instansi: "",
+        email: "",
+        provinsi: "",
+        kabKota: "",
     };
 
     const defaultSection1 = {
-        role: "",
-        roleOther: "",
-        wilayahKerja: defaultWilayahKerja,
-        kontak: defaultKontak,
+        kategoriResponden: "",
+        kontakResponden: defaultKontakResponden,
         jumlahPROT: "",
         jumlahPROTOther: "",
     };
 
-    const defaultLokasi = {
-        jenis: [],
-        lokasiOther: "",
-        kelengkapanLokasi: "",
+    // Section 2 defaults
+    const defaultLokasiPROT = {
+        provinsi: "",
+        kabKota: "",
+        kecamatan: "",
+        desa: "",
         alamatLengkap: "",
-        koordinatGPS: "",
     };
 
-    const defaultIdentitas = {
-        kategori: "",
-        namaPROT: "",
-        adaNamaLain: "",
-        variasiNama: "",
-        lokasi: defaultLokasi,
+    const defaultKontakKoordinator = {
+        nama: "",
+        hp: "",
+        email: "",
     };
 
-    const defaultAturan = {
-        statusAturan: "",
-        sumberRujukan: [],
-        sumberRujukanOther: "",
-        ringkasanAturan: "",
-        adaVariasiAturan: "",
-        jelaskanVariasi: "",
+    const defaultKontakPelatih = {
+        nama: "",
+        hp: "",
+        email: "",
     };
 
-    const defaultKoordinator = {
-        ada: "",
-        peran: "",
-        peranOther: "",
-        cakupan: "",
-        kontak: "",
+    // Section 3 defaults
+    const defaultSection3 = {
+        frekuensiDimainkan: "",
+        frekuensiOther: "",
+        targetUsia: "",
+        jumlahPenggiat: "",
+        ketersediaanLahan: "",
+        ketersediaanLahanOther: "",
+        partisipasiSekolah: "",
+        partisipasiSekolahOther: "",
+        penghargaanJuara: "",
+        penghargaanJuaraOther: "",
     };
 
-    const defaultPelatih = {
-        status: "",
-        level: "",
-        kontak: "",
-        jadwalLatihan: "",
+    // Section 4 defaults
+    const defaultSection4 = {
+        produksiAlat: "",
+        hargaAlat: "",
+        dayaTarikWisata: "",
+        kerjasamaUMKM: "",
+        penyerapanTenagaKerja: "",
     };
 
-    const defaultPakar = {
-        ada: "",
-        kategori: [],
-        kategoriOther: "",
-        kontak: "",
-        adaBukti: "",
-        buktiFiles: [],
+    // Section 5 defaults
+    const defaultSection5 = {
+        hambatanUtama: [],
+        hambatanUtamaOther: "",
+        kebutuhanMendesak: [],
+        kebutuhanMendesakOther: "",
+        harapanKPOTI: "",
     };
 
-    const defaultSDM = {
-        koordinator: defaultKoordinator,
-        pelatih: defaultPelatih,
-        pakar: defaultPakar,
-    };
-
-    const defaultKomunitasAktivitas = {
-        adaKomunitas: "",
-        bentukKomunitas: [],
-        bentukKomunitasOther: "",
-        statusKeaktifan: "",
-        frekuensiKegiatan: "",
-        jenisKegiatan: [],
-        jenisKegiatanOther: "",
-        adaDokumentasi: "",
-        dokumentasiFiles: [],
-    };
-
-    const defaultAlatProduksi = {
-        adaPengrajin: "",
-        skalaProduksi: "",
-        kepemilikanAlat: [],
-        kondisiAlat: "",
-        standardisasiAlat: "",
-        dokumentasiAlat: [],
-        dokumentasiFiles: [],
-    };
-
-    const defaultPeranPemda = {
-        adaPeran: "",
-        bentukPeran: [],
-        bentukPeranOther: "",
-        bentukDukungan: [],
-        bentukDukunganOther: "",
-        buktiDukungan: [],
-        buktiFiles: [],
-    };
-
-    const defaultKondisiKepengurusan = {
-        perkembangan: "",
-        indikatorPerkembangan: [],
-        indikatorPerkembanganOther: "",
-        kegiatanBerjalan: [],
-        kegiatanBerjalanOther: "",
-        statusProgram: "",
-        kendala: [],
-        kendalaOther: "",
-        dampakKendala: "",
-        catatanTambahan: "",
+    // Section 6 defaults
+    const defaultSection6 = {
+        fotoAlat: [],
+        fotoKegiatan: [],
+        videoPROT: [],
     };
 
     // Merge section1 with defaults
     const section1 = {
         ...defaultSection1,
         ...data.section1,
-        wilayahKerja: {
-            ...defaultWilayahKerja,
-            ...(data.section1?.wilayahKerja || {}),
-        },
-        kontak: {
-            ...defaultKontak,
-            ...(data.section1?.kontak || {}),
+        kontakResponden: {
+            ...defaultKontakResponden,
+            ...(data.section1?.kontakResponden || {}),
         },
     };
 
@@ -262,52 +212,50 @@ function ensureDefaults(data: any) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (entry: any, index: number) => ({
             entryNumber: entry.entryNumber || index + 1,
-            identitas: {
-                ...defaultIdentitas,
-                ...entry.identitas,
-                lokasi: {
-                    ...defaultLokasi,
-                    ...(entry.identitas?.lokasi || {}),
-                },
+            namaPROT: entry.namaPROT || "",
+            jenisKategori: entry.jenisKategori || "",
+            statusAsalUsul: entry.statusAsalUsul || "",
+            lokasi: {
+                ...defaultLokasiPROT,
+                ...(entry.lokasi || {}),
             },
-            aturan: {
-                ...defaultAturan,
-                ...entry.aturan,
+            koordinator: {
+                ...defaultKontakKoordinator,
+                ...(entry.koordinator || {}),
             },
-            sdm: {
-                ...defaultSDM,
-                ...entry.sdm,
-                koordinator: {
-                    ...defaultKoordinator,
-                    ...(entry.sdm?.koordinator || {}),
-                },
-                pelatih: {
-                    ...defaultPelatih,
-                    ...(entry.sdm?.pelatih || {}),
-                },
-                pakar: {
-                    ...defaultPakar,
-                    ...(entry.sdm?.pakar || {}),
-                },
+            pelatih: {
+                ...defaultKontakPelatih,
+                ...(entry.pelatih || {}),
             },
-            komunitasAktivitas: {
-                ...defaultKomunitasAktivitas,
-                ...entry.komunitasAktivitas,
-            },
-            alatProduksi: {
-                ...defaultAlatProduksi,
-                ...entry.alatProduksi,
-            },
-            peranPemda: {
-                ...defaultPeranPemda,
-                ...entry.peranPemda,
-            },
-            kondisiKepengurusan: {
-                ...defaultKondisiKepengurusan,
-                ...entry.kondisiKepengurusan,
-            },
+            peralatanPROT: entry.peralatanPROT || "",
+            caraBermain: entry.caraBermain || "",
+            nilaiMoral: entry.nilaiMoral || "",
         })
     );
+
+    // Merge section3 with defaults
+    const section3 = {
+        ...defaultSection3,
+        ...data.section3,
+    };
+
+    // Merge section4 with defaults
+    const section4 = {
+        ...defaultSection4,
+        ...data.section4,
+    };
+
+    // Merge section5 with defaults
+    const section5 = {
+        ...defaultSection5,
+        ...data.section5,
+    };
+
+    // Merge section6 with defaults
+    const section6 = {
+        ...defaultSection6,
+        ...data.section6,
+    };
 
     return {
         status: data.status || "draft",
@@ -315,6 +263,10 @@ function ensureDefaults(data: any) {
         section2: {
             entries,
         },
+        section3,
+        section4,
+        section5,
+        section6,
     };
 }
 

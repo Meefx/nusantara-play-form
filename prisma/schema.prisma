@@ -18,146 +18,104 @@ model Survey {
   status      String   @default("draft") // "draft" | "completed"
   section1    Section1
   section2    Section2
+  section3    Section3
+  section4    Section4
+  section5    Section5
+  section6    Section6
 
   @@index([submittedAt])
   @@index([status])
 }
 
 // === SECTION 1 TYPES ===
-type WilayahKerja {
-  provinsi      String @default("")
-  kabKota       String @default("")
-  kecamatan     String @default("")
-  desaKelurahan String @default("")
-}
-
-type Kontak {
+type KontakResponden {
   namaLengkap String @default("")
   nomorHP     String @default("")
-  instansi    String @default("")
+  email       String @default("")
+  provinsi    String @default("")
+  kabKota     String @default("")
 }
 
 type Section1 {
-  role            String      @default("")
-  roleOther       String      @default("")
-  wilayahKerja    WilayahKerja
-  kontak          Kontak
-  jumlahPROT      String      @default("")
-  jumlahPROTOther String      @default("")
+  kategoriResponden String           @default("")
+  kontakResponden   KontakResponden
+  jumlahPROT        String           @default("")
+  jumlahPROTOther   String           @default("")
 }
 
 // === SECTION 2 TYPES ===
-type Lokasi {
-  jenis            String[] @default([])
-  lokasiOther      String   @default("")
-  kelengkapanLokasi String  @default("")
-  alamatLengkap    String   @default("")
-  koordinatGPS     String   @default("")
+type LokasiPROT {
+  provinsi      String @default("")
+  kabKota       String @default("")
+  kecamatan     String @default("")
+  desa          String @default("")
+  alamatLengkap String @default("")
 }
 
-type Identitas {
-  kategori   String @default("")
-  namaPROT   String @default("")
-  adaNamaLain String @default("")
-  variasiNama String @default("")
-  lokasi     Lokasi
+type KontakKoordinator {
+  nama  String @default("")
+  hp    String @default("")
+  email String @default("")
 }
 
-type Aturan {
-  statusAturan       String   @default("")
-  sumberRujukan      String[] @default([])
-  sumberRujukanOther String   @default("")
-  ringkasanAturan    String   @default("")
-  adaVariasiAturan   String   @default("")
-  jelaskanVariasi    String   @default("")
-}
-
-type Koordinator {
-  ada       String @default("")
-  peran     String @default("")
-  peranOther String @default("")
-  cakupan   String @default("")
-  kontak    String @default("")
-}
-
-type Pelatih {
-  status        String @default("")
-  level         String @default("")
-  kontak        String @default("")
-  jadwalLatihan String @default("")
-}
-
-type Pakar {
-  ada           String   @default("")
-  kategori      String[] @default([])
-  kategoriOther String   @default("")
-  kontak        String   @default("")
-  adaBukti      String   @default("")
-  buktiFiles    String[] @default([])
-}
-
-type SDM {
-  koordinator Koordinator
-  pelatih     Pelatih
-  pakar       Pakar
-}
-
-type KomunitasAktivitas {
-  adaKomunitas         String   @default("")
-  bentukKomunitas      String[] @default([])
-  bentukKomunitasOther String   @default("")
-  statusKeaktifan      String   @default("")
-  frekuensiKegiatan    String   @default("")
-  jenisKegiatan        String[] @default([])
-  jenisKegiatanOther   String   @default("")
-  adaDokumentasi       String   @default("")
-  dokumentasiFiles     String[] @default([])
-}
-
-type AlatProduksi {
-  adaPengrajin      String   @default("")
-  skalaProduksi     String   @default("")
-  kepemilikanAlat   String[] @default([])
-  kondisiAlat       String   @default("")
-  standardisasiAlat String   @default("")
-  dokumentasiAlat   String[] @default([])
-  dokumentasiFiles  String[] @default([])
-}
-
-type PeranPemda {
-  adaPeran            String   @default("")
-  bentukPeran         String[] @default([])
-  bentukPeranOther    String   @default("")
-  bentukDukungan      String[] @default([])
-  bentukDukunganOther String   @default("")
-  buktiDukungan       String[] @default([])
-  buktiFiles          String[] @default([])
-}
-
-type KondisiKepengurusan {
-  perkembangan              String   @default("")
-  indikatorPerkembangan     String[] @default([])
-  indikatorPerkembanganOther String  @default("")
-  kegiatanBerjalan          String[] @default([])
-  kegiatanBerjalanOther     String   @default("")
-  statusProgram             String   @default("")
-  kendala                   String[] @default([])
-  kendalaOther              String   @default("")
-  dampakKendala             String   @default("")
-  catatanTambahan           String   @default("")
+type KontakPelatih {
+  nama  String @default("")
+  hp    String @default("")
+  email String @default("")
 }
 
 type Entry {
-  entryNumber         Int
-  identitas           Identitas
-  aturan              Aturan
-  sdm                 SDM
-  komunitasAktivitas  KomunitasAktivitas
-  alatProduksi        AlatProduksi
-  peranPemda          PeranPemda
-  kondisiKepengurusan KondisiKepengurusan
+  entryNumber    Int
+  namaPROT       String          @default("")
+  jenisKategori  String          @default("")
+  statusAsalUsul String          @default("")
+  lokasi         LokasiPROT
+  koordinator    KontakKoordinator
+  pelatih        KontakPelatih
+  peralatanPROT  String          @default("")
+  caraBermain    String          @default("")
+  nilaiMoral     String          @default("")
 }
 
 type Section2 {
   entries Entry[]
+}
+
+// === SECTION 3 TYPES ===
+type Section3 {
+  frekuensiDimainkan      String @default("")
+  frekuensiOther          String @default("")
+  targetUsia              String @default("")
+  jumlahPenggiat          String @default("")
+  ketersediaanLahan       String @default("")
+  ketersediaanLahanOther  String @default("")
+  partisipasiSekolah      String @default("")
+  partisipasiSekolahOther String @default("")
+  penghargaanJuara        String @default("")
+  penghargaanJuaraOther   String @default("")
+}
+
+// === SECTION 4 TYPES ===
+type Section4 {
+  produksiAlat          String @default("")
+  hargaAlat             String @default("")
+  dayaTarikWisata       String @default("")
+  kerjasamaUMKM         String @default("")
+  penyerapanTenagaKerja String @default("")
+}
+
+// === SECTION 5 TYPES ===
+type Section5 {
+  hambatanUtama           String[] @default([])
+  hambatanUtamaOther      String   @default("")
+  kebutuhanMendesak       String[] @default([])
+  kebutuhanMendesakOther  String   @default("")
+  harapanKPOTI            String   @default("")
+}
+
+// === SECTION 6 TYPES ===
+type Section6 {
+  fotoAlat     String[] @default([])
+  fotoKegiatan String[] @default([])
+  videoPROT    String[] @default([])
 }
