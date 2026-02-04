@@ -336,7 +336,23 @@ export default function ManagementDashboard() {
 
         const progress: ProvinsiProgress[] = wilayahData.map((prov) => {
             // Count unique kabupaten registered from statistics
-            const registeredKabKota = statistics.kabKotaPerProvinsi[prov.name]?.length || 0;
+            // Try matching by both code and name (case insensitive)
+            let registeredKabKota = 0;
+
+            // Check if statistics has data by province code
+            if (statistics.kabKotaPerProvinsi[prov.code]) {
+                registeredKabKota = statistics.kabKotaPerProvinsi[prov.code].length;
+            }
+            // Also check by name (case insensitive)
+            else {
+                const matchingKey = Object.keys(statistics.kabKotaPerProvinsi).find(
+                    key => key.toLowerCase() === prov.name.toLowerCase()
+                );
+                if (matchingKey) {
+                    registeredKabKota = statistics.kabKotaPerProvinsi[matchingKey].length;
+                }
+            }
+
             const total = prov.totalKabKota;
             const percentage = total > 0 ? Math.round((registeredKabKota / total) * 100) : 0;
 
@@ -579,7 +595,7 @@ export default function ManagementDashboard() {
                                     .slice(0, 5)
                                     .map(([prov, count]) => (
                                         <div key={prov} className="flex justify-between items-center">
-                                            <span className="text-gray-700 truncate">{prov}</span>
+                                            <span className="text-gray-700 truncate">{getProvinsiName(prov)}</span>
                                             <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                                                 {count}
                                             </span>
@@ -705,7 +721,7 @@ export default function ManagementDashboard() {
                                 <option value="">Semua Provinsi</option>
                                 {statistics?.uniqueProvinsi.map((prov) => (
                                     <option key={prov} value={prov}>
-                                        {prov}
+                                        {getProvinsiName(prov)}
                                     </option>
                                 ))}
                             </select>
@@ -923,8 +939,8 @@ export default function ManagementDashboard() {
                                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                             disabled={!pagination.hasPrevPage}
                                             className={`px-4 py-2 rounded-lg font-medium ${pagination.hasPrevPage
-                                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                                : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                                 }`}
                                         >
                                             ← Prev
@@ -936,8 +952,8 @@ export default function ManagementDashboard() {
                                             onClick={() => setCurrentPage((p) => p + 1)}
                                             disabled={!pagination.hasNextPage}
                                             className={`px-4 py-2 rounded-lg font-medium ${pagination.hasNextPage
-                                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                                : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                                 }`}
                                         >
                                             Next →
