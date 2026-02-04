@@ -5,24 +5,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Survey {
-    _id: string;
+    _id?: string;
+    id?: string;
     status: string;
     submittedAt: string;
-    createdAt: string;
+    createdAt?: string;
     updatedAt: string;
     section1: {
-        role: string;
-        roleOther: string;
-        wilayahKerja: {
-            provinsi: string;
-            kabKota: string;
-            kecamatan: string;
-            desaKelurahan: string;
-        };
-        kontak: {
+        kategoriResponden: string;
+        kontakResponden: {
             namaLengkap: string;
             nomorHP: string;
-            instansi: string;
+            email: string;
+            provinsi: string;
+            kabKota: string;
         };
         jumlahPROT: string;
         jumlahPROTOther: string;
@@ -30,92 +26,61 @@ interface Survey {
     section2: {
         entries: Array<{
             entryNumber: number;
-            identitas: {
-                kategori: string;
-                namaPROT: string;
-                adaNamaLain: string;
-                variasiNama: string;
-                lokasi: {
-                    jenis: string[];
-                    lokasiOther: string;
-                    kelengkapanLokasi: string;
-                    alamatLengkap: string;
-                    koordinatGPS: string;
-                };
+            namaPROT: string;
+            jenisKategori: string;
+            statusAsalUsul: string;
+            lokasi: {
+                provinsi: string;
+                kabKota: string;
+                kecamatan: string;
+                desa: string;
+                alamatLengkap: string;
             };
-            aturan: {
-                statusAturan: string;
-                sumberRujukan: string[];
-                sumberRujukanOther: string;
-                ringkasanAturan: string;
-                adaVariasiAturan: string;
-                jelaskanVariasi: string;
+            koordinator: {
+                nama: string;
+                hp: string;
+                email: string;
             };
-            sdm: {
-                koordinator: {
-                    ada: string;
-                    peran: string;
-                    peranOther: string;
-                    cakupan: string;
-                    kontak: string;
-                };
-                pelatih: {
-                    status: string;
-                    level: string;
-                    kontak: string;
-                    jadwalLatihan: string;
-                };
-                pakar: {
-                    ada: string;
-                    kategori: string[];
-                    kategoriOther: string;
-                    kontak: string;
-                    adaBukti: string;
-                    buktiFiles: string[];
-                };
+            pelatih: {
+                nama: string;
+                hp: string;
+                email: string;
             };
-            komunitasAktivitas: {
-                adaKomunitas: string;
-                bentukKomunitas: string[];
-                bentukKomunitasOther: string;
-                statusKeaktifan: string;
-                frekuensiKegiatan: string;
-                jenisKegiatan: string[];
-                jenisKegiatanOther: string;
-                adaDokumentasi: string;
-                dokumentasiFiles: string[];
-            };
-            alatProduksi: {
-                adaPengrajin: string;
-                skalaProduksi: string;
-                kepemilikanAlat: string[];
-                kondisiAlat: string;
-                standardisasiAlat: string;
-                dokumentasiAlat: string[];
-                dokumentasiFiles: string[];
-            };
-            peranPemda: {
-                adaPeran: string;
-                bentukPeran: string[];
-                bentukPeranOther: string;
-                bentukDukungan: string[];
-                bentukDukunganOther: string;
-                buktiDukungan: string[];
-                buktiFiles: string[];
-            };
-            kondisiKepengurusan: {
-                perkembangan: string;
-                indikatorPerkembangan: string[];
-                indikatorPerkembanganOther: string;
-                kegiatanBerjalan: string[];
-                kegiatanBerjalanOther: string;
-                statusProgram: string;
-                kendala: string[];
-                kendalaOther: string;
-                dampakKendala: string;
-                catatanTambahan: string;
-            };
+            peralatanPROT: string;
+            caraBermain: string;
+            nilaiMoral: string;
         }>;
+    };
+    section3?: {
+        frekuensiDimainkan: string;
+        frekuensiOther: string;
+        targetUsia: string;
+        jumlahPenggiat: string;
+        ketersediaanLahan: string;
+        ketersediaanLahanOther: string;
+        partisipasiSekolah: string;
+        partisipasiSekolahOther: string;
+        penghargaanJuara: string;
+        penghargaanJuaraOther: string;
+    };
+    section4?: {
+        produksiAlat: string;
+        hargaAlat: string;
+        dayaTarikWisata: string;
+        kerjasamaUMKM: string;
+        penyerapanTenagaKerja: string;
+    };
+    section5?: {
+        hambatanUtama: string[];
+        hambatanUtamaOther: string;
+        kebutuhanMendesak: string[];
+        kebutuhanMendesakOther: string;
+        harapanKPOTI: string;
+    };
+    section6?: {
+        fotoAlat: string[];
+        fotoKegiatan: string[];
+        videoPROT: string[];
     };
 }
 
@@ -234,28 +199,62 @@ export default function SurveyDetailPage({
         });
     };
 
-    const getRoleLabel = (role: string) => {
-        const roles: Record<string, string> = {
-            provinsi: "Pengurus/Koordinator PR-OT tingkat Provinsi",
-            kabkota: "Pengurus/Koordinator PR-OT tingkat Kab/Kota",
-            kecamatan: "Pengurus/Koordinator PR-OT tingkat Kecamatan/Desa",
-            perangkat: "Perangkat Desa/Kelurahan (mitra pengurus daerah)",
-            pemda: "Pemda/Instansi pembina (Dispora/Dikbud/Dispar/dll.)",
+    const getKategoriRespondenLabel = (kategori: string) => {
+        const labels: Record<string, string> = {
+            pengurus_kpoti: "Pengurus KPOTI",
+            pelatih: "Pelatih",
+            atlet: "Atlet",
+            masyarakat_umum: "Masyarakat Umum",
         };
-        return roles[role] || role;
+        return labels[kategori] || kategori;
     };
 
     const getKategoriLabel = (kategori: string) => {
-        switch (kategori) {
-            case "pr":
-                return "Permainan Rakyat (PR)";
-            case "ot":
-                return "Olahraga Tradisional (OT)";
-            case "keduanya":
-                return "Keduanya";
-            default:
-                return kategori;
-        }
+        const labels: Record<string, string> = {
+            "permainanRakyat": "Permainan Rakyat",
+            "olahragaTradisional": "Olahraga Tradisional",
+        };
+        return labels[kategori] || kategori;
+    };
+
+    const getProvinsiName = (kode: string) => {
+        const provinsiMap: Record<string, string> = {
+            "11": "Aceh",
+            "12": "Sumatera Utara",
+            "13": "Sumatera Barat",
+            "14": "Riau",
+            "15": "Jambi",
+            "16": "Sumatera Selatan",
+            "17": "Bengkulu",
+            "18": "Lampung",
+            "19": "Kepulauan Bangka Belitung",
+            "21": "Kepulauan Riau",
+            "31": "DKI Jakarta",
+            "32": "Jawa Barat",
+            "33": "Jawa Tengah",
+            "34": "DI Yogyakarta",
+            "35": "Jawa Timur",
+            "36": "Banten",
+            "51": "Bali",
+            "52": "Nusa Tenggara Barat",
+            "53": "Nusa Tenggara Timur",
+            "61": "Kalimantan Barat",
+            "62": "Kalimantan Tengah",
+            "63": "Kalimantan Selatan",
+            "64": "Kalimantan Timur",
+            "65": "Kalimantan Utara",
+            "71": "Sulawesi Utara",
+            "72": "Sulawesi Tengah",
+            "73": "Sulawesi Selatan",
+            "74": "Sulawesi Tenggara",
+            "75": "Gorontalo",
+            "76": "Sulawesi Barat",
+            "81": "Maluku",
+            "82": "Maluku Utara",
+            "91": "Papua Barat",
+            "94": "Papua",
+        };
+        return provinsiMap[kode] || kode;
     };
 
     const renderArrayField = (arr: string[] | undefined, other?: string) => {
@@ -379,7 +378,7 @@ export default function SurveyDetailPage({
                             TANGGAL SUBMIT
                         </h3>
                         <p className="text-lg font-medium text-gray-800">
-                            {formatDate(survey.submittedAt || survey.createdAt)}
+                            {formatDate(survey.submittedAt || survey.createdAt || "")}
                         </p>
                     </div>
 
@@ -398,66 +397,72 @@ export default function SurveyDetailPage({
                 <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
                     <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4">
                         <h2 className="text-xl font-bold">
-                            📌 SECTION 1 - Identitas Pengurus Daerah
+                            📌 SECTION 1 - Identitas Responden
                         </h2>
                     </div>
                     <div className="p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Role */}
+                            {/* Kategori Responden */}
                             <div>
                                 <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                    Mengisi sebagai
+                                    Kategori Responden
                                 </h4>
                                 <p className="text-gray-800">
-                                    {getRoleLabel(survey.section1?.role || "")}
-                                    {survey.section1?.roleOther &&
-                                        ` (${survey.section1.roleOther})`}
+                                    {getKategoriRespondenLabel(survey.section1?.kategoriResponden || "")}
                                 </p>
                             </div>
 
-                            {/* Wilayah */}
-                            <div>
-                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                    Wilayah Kerja
-                                </h4>
-                                <p className="text-gray-800">
-                                    {survey.section1?.wilayahKerja?.provinsi || "-"},{" "}
-                                    {survey.section1?.wilayahKerja?.kabKota || "-"}
-                                </p>
-                                <p className="text-gray-600 text-sm">
-                                    Kec. {survey.section1?.wilayahKerja?.kecamatan || "-"}, Desa{" "}
-                                    {survey.section1?.wilayahKerja?.desaKelurahan || "-"}
-                                </p>
-                            </div>
-
-                            {/* Kontak */}
+                            {/* Nama Lengkap */}
                             <div>
                                 <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                     Nama Lengkap
                                 </h4>
                                 <p className="text-gray-800">
-                                    {survey.section1?.kontak?.namaLengkap || "-"}
+                                    {survey.section1?.kontakResponden?.namaLengkap || "-"}
                                 </p>
                             </div>
 
+                            {/* Nomor HP */}
                             <div>
                                 <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                     Nomor HP/WA
                                 </h4>
                                 <p className="text-gray-800">
-                                    {survey.section1?.kontak?.nomorHP || "-"}
+                                    {survey.section1?.kontakResponden?.nomorHP || "-"}
                                 </p>
                             </div>
 
+                            {/* Email */}
                             <div>
                                 <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                    Instansi/Komunitas
+                                    Email
                                 </h4>
                                 <p className="text-gray-800">
-                                    {survey.section1?.kontak?.instansi || "-"}
+                                    {survey.section1?.kontakResponden?.email || "-"}
                                 </p>
                             </div>
 
+                            {/* Provinsi */}
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Provinsi
+                                </h4>
+                                <p className="text-gray-800">
+                                    {getProvinsiName(survey.section1?.kontakResponden?.provinsi || "")}
+                                </p>
+                            </div>
+
+                            {/* Kab/Kota */}
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Kabupaten/Kota
+                                </h4>
+                                <p className="text-gray-800">
+                                    {survey.section1?.kontakResponden?.kabKota || "-"}
+                                </p>
+                            </div>
+
+                            {/* Jumlah PR/OT */}
                             <div>
                                 <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                     Jumlah PR/OT
@@ -465,7 +470,7 @@ export default function SurveyDetailPage({
                                 <p className="text-gray-800">
                                     {survey.section1?.jumlahPROT || "-"}
                                     {survey.section1?.jumlahPROTOther &&
-                                        ` (${survey.section1.jumlahPROTOther})`}
+                                        ` (Lainnya: ${survey.section1.jumlahPROTOther})`}
                                 </p>
                             </div>
                         </div>
@@ -492,7 +497,7 @@ export default function SurveyDetailPage({
                                             : "bg-white text-gray-600 hover:bg-gray-100"
                                         }`}
                                 >
-                                    {entry.identitas?.namaPROT || `Entri #${entry.entryNumber}`}
+                                    {entry.namaPROT || `Entri #${entry.entryNumber}`}
                                 </button>
                             ))}
                         </div>
@@ -501,45 +506,75 @@ export default function SurveyDetailPage({
                     {/* Entry Content */}
                     {currentEntry && (
                         <div className="p-6 space-y-8">
-                            {/* A. Identitas */}
+                            {/* Informasi Dasar */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    A. Identitas PR/OT
+                                    Informasi Dasar PR/OT
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Kategori
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {getKategoriLabel(currentEntry.identitas?.kategori || "")}
-                                        </p>
-                                    </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
                                             Nama PR/OT
                                         </h4>
                                         <p className="text-gray-800">
-                                            {currentEntry.identitas?.namaPROT || "-"}
+                                            {currentEntry.namaPROT || "-"}
                                         </p>
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Variasi Nama
+                                            Jenis Kategori
                                         </h4>
                                         <p className="text-gray-800">
-                                            {currentEntry.identitas?.variasiNama || "-"}
+                                            {getKategoriLabel(currentEntry.jenisKategori || "")}
+                                        </p>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Status Asal Usul
+                                        </h4>
+                                        <p className="text-gray-800">
+                                            {currentEntry.statusAsalUsul || "-"}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Lokasi */}
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                                    Lokasi
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Provinsi
+                                        </h4>
+                                        <p className="text-gray-800">
+                                            {getProvinsiName(currentEntry.lokasi?.provinsi || "")}
                                         </p>
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Lokasi
+                                            Kabupaten/Kota
                                         </h4>
                                         <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.identitas?.lokasi?.jenis,
-                                                currentEntry.identitas?.lokasi?.lokasiOther
-                                            )}
+                                            {currentEntry.lokasi?.kabKota || "-"}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Kecamatan
+                                        </h4>
+                                        <p className="text-gray-800">
+                                            {currentEntry.lokasi?.kecamatan || "-"}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Desa/Kelurahan
+                                        </h4>
+                                        <p className="text-gray-800">
+                                            {currentEntry.lokasi?.desa || "-"}
                                         </p>
                                     </div>
                                     <div className="md:col-span-2">
@@ -547,453 +582,348 @@ export default function SurveyDetailPage({
                                             Alamat Lengkap
                                         </h4>
                                         <p className="text-gray-800">
-                                            {currentEntry.identitas?.lokasi?.alamatLengkap || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Koordinat GPS
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.identitas?.lokasi?.koordinatGPS || "-"}
+                                            {currentEntry.lokasi?.alamatLengkap || "-"}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* B. Aturan Baku */}
+                            {/* Koordinator */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    B. Aturan Baku
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Status Aturan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.aturan?.statusAturan || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Sumber Rujukan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.aturan?.sumberRujukan,
-                                                currentEntry.aturan?.sumberRujukanOther
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Ringkasan Aturan
-                                        </h4>
-                                        <p className="text-gray-800 whitespace-pre-wrap">
-                                            {currentEntry.aturan?.ringkasanAturan || "-"}
-                                        </p>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Variasi Aturan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.aturan?.jelaskanVariasi || "-"}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* C. SDM */}
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    C. SDM (Koordinator/Pelatih/Pakar)
+                                    Koordinator
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="bg-blue-50 p-4 rounded-lg">
-                                        <h4 className="font-semibold text-blue-800 mb-2">
-                                            Koordinator
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Nama
                                         </h4>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Ada:</span>{" "}
-                                            {currentEntry.sdm?.koordinator?.ada || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Peran:</span>{" "}
-                                            {currentEntry.sdm?.koordinator?.peran || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Cakupan:</span>{" "}
-                                            {currentEntry.sdm?.koordinator?.cakupan || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Kontak:</span>{" "}
-                                            {currentEntry.sdm?.koordinator?.kontak || "-"}
+                                        <p className="text-gray-800">
+                                            {currentEntry.koordinator?.nama || "-"}
                                         </p>
                                     </div>
-                                    <div className="bg-green-50 p-4 rounded-lg">
-                                        <h4 className="font-semibold text-green-800 mb-2">
-                                            Pelatih
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            No. HP
                                         </h4>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Status:</span>{" "}
-                                            {currentEntry.sdm?.pelatih?.status || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Level:</span>{" "}
-                                            {currentEntry.sdm?.pelatih?.level || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Kontak:</span>{" "}
-                                            {currentEntry.sdm?.pelatih?.kontak || "-"}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Jadwal:</span>{" "}
-                                            {currentEntry.sdm?.pelatih?.jadwalLatihan || "-"}
+                                        <p className="text-gray-800">
+                                            {currentEntry.koordinator?.hp || "-"}
                                         </p>
                                     </div>
-                                     <div className="bg-orange-50 p-4 rounded-lg">
-                                        <h4 className="font-semibold text-orange-800 mb-2">Pakar</h4>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Ada:</span>{" "}
-                                            {currentEntry.sdm?.pakar?.ada || "-"}
+                                    <div>
+                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                            Email
+                                        </h4>
+                                        <p className="text-gray-800">
+                                            {currentEntry.koordinator?.email || "-"}
                                         </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Kategori:</span>{" "}
-                                            {renderArrayField(
-                                                currentEntry.sdm?.pakar?.kategori,
-                                                currentEntry.sdm?.pakar?.kategoriOther
-                                            )}
-                                        </p>
-                                        <p className="text-sm">
-                                            <span className="text-gray-500">Kontak:</span>{" "}
-                                            {currentEntry.sdm?.pakar?.kontak || "-"}
-                                        </p>
-                                        {currentEntry.sdm?.pakar?.buktiFiles &&
-                                            currentEntry.sdm.pakar.buktiFiles.length > 0 && (
-                                            <div className="mt-3">
-                                                <span className="text-gray-500 text-sm">File Bukti:</span>
-                                                <div className="mt-1 space-y-1">
-                                                    {currentEntry.sdm.pakar.buktiFiles.map((file, idx) => (
-                                                        <a
-                                                            key={idx}
-                                                            href={file}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
-                                                        >
-                                                            📎 {file.split("/").pop()}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* D. Komunitas & Aktivitas */}
+                            {/* Pelatih */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    D. Komunitas & Aktivitas
+                                    Pelatih
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Ada Komunitas
+                                            Nama
                                         </h4>
                                         <p className="text-gray-800">
-                                            {currentEntry.komunitasAktivitas?.adaKomunitas || "-"}
+                                            {currentEntry.pelatih?.nama || "-"}
                                         </p>
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Bentuk Komunitas
+                                            No. HP
                                         </h4>
                                         <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.komunitasAktivitas?.bentukKomunitas,
-                                                currentEntry.komunitasAktivitas?.bentukKomunitasOther
-                                            )}
+                                            {currentEntry.pelatih?.hp || "-"}
                                         </p>
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Status Keaktifan
+                                            Email
                                         </h4>
                                         <p className="text-gray-800">
-                                            {currentEntry.komunitasAktivitas?.statusKeaktifan || "-"}
+                                            {currentEntry.pelatih?.email || "-"}
                                         </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Frekuensi Kegiatan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.komunitasAktivitas?.frekuensiKegiatan || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Jenis Kegiatan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.komunitasAktivitas?.jenisKegiatan,
-                                                currentEntry.komunitasAktivitas?.jenisKegiatanOther
-                                            )}
-                                        </p>
-                                    </div>
-                                     <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Dokumentasi Kegiatan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.komunitasAktivitas?.adaDokumentasi || "-"}
-                                        </p>
-                                        {currentEntry.komunitasAktivitas?.dokumentasiFiles &&
-                                            currentEntry.komunitasAktivitas.dokumentasiFiles.length > 0 && (
-                                            <div className="mt-2">
-                                                <span className="text-gray-500 text-sm">File Dokumentasi:</span>
-                                                <div className="mt-1 space-y-1">
-                                                    {currentEntry.komunitasAktivitas.dokumentasiFiles.map((file, idx) => (
-                                                        <a
-                                                            key={idx}
-                                                            href={file}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
-                                                        >
-                                                            📎 {file.split("/").pop()}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* E. Alat Produksi */}
+                            {/* Peralatan PR/OT */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    E. Alat, Sentra Produksi, Standardisasi
+                                    Peralatan PR/OT
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Pengrajin/UMKM
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.alatProduksi?.adaPengrajin || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Skala Produksi
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.alatProduksi?.skalaProduksi || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Kepemilikan Alat
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(currentEntry.alatProduksi?.kepemilikanAlat)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Kondisi Alat
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.alatProduksi?.kondisiAlat || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Standardisasi
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.alatProduksi?.standardisasiAlat || "-"}
-                                        </p>
-                                    </div>
-                                     <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Dokumentasi Alat
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(currentEntry.alatProduksi?.dokumentasiAlat)}
-                                        </p>
-                                        {currentEntry.alatProduksi?.dokumentasiFiles &&
-                                            currentEntry.alatProduksi.dokumentasiFiles.length > 0 && (
-                                            <div className="mt-2">
-                                                <span className="text-gray-500 text-sm">File Dokumentasi:</span>
-                                                <div className="mt-1 space-y-1">
-                                                    {currentEntry.alatProduksi.dokumentasiFiles.map((file, idx) => (
-                                                        <a
-                                                            key={idx}
-                                                            href={file}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
-                                                        >
-                                                            📎 {file.split("/").pop()}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                    {currentEntry.peralatanPROT || "-"}
+                                </p>
                             </div>
 
-                            {/* F. Peran Pemda */}
+                            {/* Cara Bermain */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    F. Peran & Dukungan Pemda
+                                    Cara Bermain
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Ada Peran Pemda
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.peranPemda?.adaPeran || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Bentuk Peran
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.peranPemda?.bentukPeran,
-                                                currentEntry.peranPemda?.bentukPeranOther
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Bentuk Dukungan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.peranPemda?.bentukDukungan,
-                                                currentEntry.peranPemda?.bentukDukunganOther
-                                            )}
-                                        </p>
-                                    </div>
-                                     <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Bukti Dukungan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(currentEntry.peranPemda?.buktiDukungan)}
-                                        </p>
-                                        {currentEntry.peranPemda?.buktiFiles &&
-                                            currentEntry.peranPemda.buktiFiles.length > 0 && (
-                                            <div className="mt-2">
-                                                <span className="text-gray-500 text-sm">File Bukti:</span>
-                                                <div className="mt-1 space-y-1">
-                                                    {currentEntry.peranPemda.buktiFiles.map((file, idx) => (
-                                                        <a
-                                                            key={idx}
-                                                            href={file}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
-                                                        >
-                                                            📎 {file.split("/").pop()}
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                    {currentEntry.caraBermain || "-"}
+                                </p>
                             </div>
 
-                            {/* G. Kondisi Kepengurusan */}
+                            {/* Nilai Moral */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
-                                    G. Kondisi Kepengurusan
+                                    Nilai Moral/Karakter
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Perkembangan 12-24 bulan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.kondisiKepengurusan?.perkembangan || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Indikator Perkembangan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.kondisiKepengurusan?.indikatorPerkembangan,
-                                                currentEntry.kondisiKepengurusan?.indikatorPerkembanganOther
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Kegiatan Berjalan
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.kondisiKepengurusan?.kegiatanBerjalan,
-                                                currentEntry.kondisiKepengurusan?.kegiatanBerjalanOther
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Status Program
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.kondisiKepengurusan?.statusProgram || "-"}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Kendala
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {renderArrayField(
-                                                currentEntry.kondisiKepengurusan?.kendala,
-                                                currentEntry.kondisiKepengurusan?.kendalaOther
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Dampak Kendala
-                                        </h4>
-                                        <p className="text-gray-800">
-                                            {currentEntry.kondisiKepengurusan?.dampakKendala || "-"}
-                                        </p>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <h4 className="font-semibold text-gray-500 text-sm mb-1">
-                                            Catatan Tambahan
-                                        </h4>
-                                        <p className="text-gray-800 whitespace-pre-wrap">
-                                            {currentEntry.kondisiKepengurusan?.catatanTambahan || "-"}
-                                        </p>
-                                    </div>
-                                </div>
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                    {currentEntry.nilaiMoral || "-"}
+                                </p>
                             </div>
                         </div>
                     )}
                 </div>
+
+                {/* Section 3 */}
+                {survey.section3 && (
+                    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-8">
+                        <div className="bg-gradient-to-r from-green-600 to-teal-500 text-white px-6 py-4">
+                            <h2 className="text-xl font-bold">
+                                📊 SECTION 3 - Aktivitas & Partisipasi
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Frekuensi Dimainkan
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.frekuensiDimainkan}
+                                        {survey.section3.frekuensiOther && ` (${survey.section3.frekuensiOther})`}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Target Usia
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.targetUsia || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Jumlah Penggiat
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.jumlahPenggiat || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Ketersediaan Lahan
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.ketersediaanLahan}
+                                        {survey.section3.ketersediaanLahanOther && ` (${survey.section3.ketersediaanLahanOther})`}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Partisipasi Sekolah
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.partisipasiSekolah}
+                                        {survey.section3.partisipasiSekolahOther && ` (${survey.section3.partisipasiSekolahOther})`}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Penghargaan Juara
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section3.penghargaanJuara}
+                                        {survey.section3.penghargaanJuaraOther && ` (${survey.section3.penghargaanJuaraOther})`}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Section 4 */}
+                {survey.section4 && (
+                    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-8">
+                        <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-4">
+                            <h2 className="text-xl font-bold">
+                                💼 SECTION 4 - Ekonomi & Industri
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Produksi Alat
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section4.produksiAlat || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Harga Alat
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        Rp {survey.section4.hargaAlat || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Daya Tarik Wisata
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section4.dayaTarikWisata || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Kerjasama UMKM
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section4.kerjasamaUMKM || "-"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                        Penyerapan Tenaga Kerja
+                                    </h4>
+                                    <p className="text-gray-800">
+                                        {survey.section4.penyerapanTenagaKerja || "-"} orang
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Section 5 */}
+                {survey.section5 && (
+                    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-8">
+                        <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-6 py-4">
+                            <h2 className="text-xl font-bold">
+                                🔧 SECTION 5 - Hambatan & Kebutuhan
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Hambatan Utama
+                                </h4>
+                                <p className="text-gray-800">
+                                    {renderArrayField(survey.section5.hambatanUtama, survey.section5.hambatanUtamaOther)}
+                                </p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Kebutuhan Mendesak
+                                </h4>
+                                <p className="text-gray-800">
+                                    {renderArrayField(survey.section5.kebutuhanMendesak, survey.section5.kebutuhanMendesakOther)}
+                                </p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Harapan kepada KPOTI
+                                </h4>
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                    {survey.section5.harapanKPOTI || "-"}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Section 6 */}
+                {survey.section6 && (
+                    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-8">
+                        <div className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-6 py-4">
+                            <h2 className="text-xl font-bold">
+                                📸 SECTION 6 - Dokumentasi
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-2">
+                                    Foto Alat
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {survey.section6.fotoAlat?.map((url, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                                        >
+                                            <img
+                                                src={url}
+                                                alt={`Foto Alat ${idx + 1}`}
+                                                className="w-full h-40 object-cover"
+                                            />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-2">
+                                    Foto Kegiatan
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {survey.section6.fotoKegiatan?.map((url, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                                        >
+                                            <img
+                                                src={url}
+                                                alt={`Foto Kegiatan ${idx + 1}`}
+                                                className="w-full h-40 object-cover"
+                                            />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                            {survey.section6.videoPROT && survey.section6.videoPROT.length > 0 && (
+                                <div>
+                                    <h4 className="font-semibold text-gray-500 text-sm mb-2">
+                                        Video PR/OT
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {survey.section6.videoPROT.map((url, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="block p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                                            >
+                                                🎥 Video #{idx + 1}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
 }
+                                   

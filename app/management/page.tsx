@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function ManagementLoginPage() {
     const router = useRouter();
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +21,7 @@ export default function ManagementLoginPage() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({ email, password }),
             });
 
             const result = await response.json();
@@ -49,7 +50,7 @@ export default function ManagementLoginPage() {
                             Management Login
                         </h1>
                         <p className="text-gray-600 mt-2">
-                            Masukkan password untuk mengakses dashboard
+                            Masukkan email dan password untuk mengakses dashboard
                         </p>
                     </div>
 
@@ -62,6 +63,24 @@ export default function ManagementLoginPage() {
 
                     {/* Login Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label
+                                htmlFor="email"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                placeholder="masukkan email"
+                                required
+                            />
+                        </div>
+
                         <div>
                             <label
                                 htmlFor="password"
@@ -84,9 +103,9 @@ export default function ManagementLoginPage() {
                             type="submit"
                             disabled={isLoading}
                             className={`w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-lg font-semibold shadow-lg transition-all duration-200 ${isLoading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:from-blue-700 hover:to-orange-600 hover:shadow-xl transform hover:-translate-y-0.5"
-                                }`}
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:from-blue-700 hover:to-orange-600 hover:shadow-xl transform hover:-translate-y-0.5"
+                            }`}
                         >
                             {isLoading ? "⏳ Memproses..." : "🔓 Login"}
                         </button>
