@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
         const provinsi = searchParams.get("provinsi");
         const kabKota = searchParams.get("kabKota");
         const search = searchParams.get("search");
+        const includeStats = searchParams.get("includeStats") === "true";
 
         // Build where clause
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +30,8 @@ export async function GET(request: NextRequest) {
             where.section1 = {
                 ...where.section1,
                 is: {
-                    wilayahKerja: {
+                    ...where.section1?.is,
+                    kontakResponden: {
                         is: {
                             provinsi: {
                                 contains: provinsi,
@@ -45,8 +47,10 @@ export async function GET(request: NextRequest) {
             where.section1 = {
                 ...where.section1,
                 is: {
-                    wilayahKerja: {
+                    ...where.section1?.is,
+                    kontakResponden: {
                         is: {
+                            ...where.section1?.is?.kontakResponden?.is,
                             kabKota: {
                                 contains: kabKota,
                                 mode: "insensitive",
@@ -62,7 +66,7 @@ export async function GET(request: NextRequest) {
                 {
                     section1: {
                         is: {
-                            kontak: {
+                            kontakResponden: {
                                 is: {
                                     namaLengkap: {
                                         contains: search,
@@ -93,7 +97,14 @@ export async function GET(request: NextRequest) {
 
         const totalPages = Math.ceil(total / limit);
 
-        return NextResponse.json({
+        // Calculate statistics if requested
+        let statistics = null;
+        if (includeStats) {
+            const allSurveys = await prisma.survey.findMany({ where });
+            statistics = calculateStatistics(allSurveys);
+        }
+
+        const response: any = {
             success: true,
             data: surveys,
             pagination: {
@@ -104,7 +115,13 @@ export async function GET(request: NextRequest) {
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1,
             },
-        });
+        };
+
+        if (statistics) {
+            response.statistics = statistics;
+        }
+
+        return NextResponse.json(response);
     } catch (error) {
         console.error("Error fetching surveys:", error);
         return NextResponse.json(
@@ -116,6 +133,36 @@ export async function GET(request: NextRequest) {
             { status: 500 }
         );
     }
+}
+
+// Calculate statistics from surveys
+function calculateStatistics(surveys: any[]) {
+    const byProvinsi: Record<string, number> = {};
+    const byKabKota: Record<string, number> = {};
+    const uniqueProvinsi: Set<string> = new Set();
+    const uniqueKabKota: Set<string> = new Set();
+
+    surveys.forEach((survey) => {
+        const provinsi = survey.section1?.kontakResponden?.provinsi || "";
+        const kabKota = survey.section1?.kontakResponden?.kabKota || "";
+
+        if (provinsi) {
+            byProvinsi[provinsi] = (byProvinsi[provinsi] || 0) + 1;
+            uniqueProvinsi.add(provinsi);
+        }
+
+        if (kabKota) {
+            byKabKota[kabKota] = (byKabKota[kabKota] || 0) + 1;
+            uniqueKabKota.add(kabKota);
+        }
+    });
+
+    return {
+        byProvinsi,
+        byKabKota,
+        uniqueProvinsi: Array.from(uniqueProvinsi).sort(),
+        uniqueKabKota: Array.from(uniqueKabKota).sort(),
+    };
 }
 
 // Helper function to ensure nested objects have default values
