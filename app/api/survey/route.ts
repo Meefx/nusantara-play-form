@@ -152,11 +152,13 @@ export async function GET(request: NextRequest) {
 }
 
 // Calculate statistics from surveys
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function calculateStatistics(surveys: any[]) {
     const byProvinsi: Record<string, number> = {};
     const byKabKota: Record<string, number> = {};
     const uniqueProvinsi: Set<string> = new Set();
     const uniqueKabKota: Set<string> = new Set();
+    const kabKotaPerProvinsi: Record<string, Set<string>> = {};
 
     surveys.forEach((survey) => {
         const provinsi = survey.section1?.kontakResponden?.provinsi || "";
@@ -165,6 +167,14 @@ function calculateStatistics(surveys: any[]) {
         if (provinsi) {
             byProvinsi[provinsi] = (byProvinsi[provinsi] || 0) + 1;
             uniqueProvinsi.add(provinsi);
+
+            // Track kabKota per provinsi
+            if (!kabKotaPerProvinsi[provinsi]) {
+                kabKotaPerProvinsi[provinsi] = new Set();
+            }
+            if (kabKota) {
+                kabKotaPerProvinsi[provinsi].add(kabKota);
+            }
         }
 
         if (kabKota) {
@@ -173,11 +183,18 @@ function calculateStatistics(surveys: any[]) {
         }
     });
 
+    // Convert Sets to Arrays for JSON serialization
+    const kabKotaPerProvinsiArray: Record<string, string[]> = {};
+    Object.entries(kabKotaPerProvinsi).forEach(([prov, kabSet]) => {
+        kabKotaPerProvinsiArray[prov] = Array.from(kabSet).sort();
+    });
+
     return {
         byProvinsi,
         byKabKota,
         uniqueProvinsi: Array.from(uniqueProvinsi).sort(),
         uniqueKabKota: Array.from(uniqueKabKota).sort(),
+        kabKotaPerProvinsi: kabKotaPerProvinsiArray,
     };
 }
 
