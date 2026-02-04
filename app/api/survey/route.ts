@@ -100,7 +100,23 @@ export async function GET(request: NextRequest) {
         // Calculate statistics if requested
         let statistics = null;
         if (includeStats) {
-            const allSurveys = await prisma.survey.findMany({ where });
+            // Get all unique provinsi and kabKota with counts
+            const allSurveys = await prisma.survey.findMany({
+                where,
+                select: {
+                    section1: {
+                        select: {
+                            kontakResponden: {
+                                select: {
+                                    provinsi: true,
+                                    kabKota: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
             statistics = calculateStatistics(allSurveys);
         }
 
