@@ -70,10 +70,11 @@ export async function POST(request: NextRequest) {
             ];
         }
 
-        // Fetch all matching surveys (no pagination)
+        // Fetch all matching surveys (no pagination, but with reasonable limit)
         const surveys = await prisma.survey.findMany({
             where,
             orderBy: { submittedAt: "desc" },
+            take: 10000, // Limit to prevent memory issues
         });
 
         if (surveys.length === 0) {
