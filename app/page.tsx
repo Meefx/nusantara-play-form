@@ -170,6 +170,66 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Contact Information */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10 mb-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Hubungi Kami 📞</h2>
+            <p className="text-gray-600">Jika ada pertanyaan, silakan hubungi kami</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Contact Details */}
+            <div className="space-y-6">
+              {/* Hotline */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-l-4 border-blue-500">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl flex-shrink-0">
+                    📱
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-800 mb-2">Kontak Hotline</h3>
+                    <a href="tel:081927734488" className="text-blue-600 text-xl font-bold hover:underline">
+                      081927734488
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Address */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-l-4 border-orange-500">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white text-2xl flex-shrink-0">
+                    📍
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-800 mb-2">Alamat Kantor</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      GBK Arena Lantai 7<br />
+                      Jl. Asia Afrika No.70, Gelora<br />
+                      Tanah Abang, Kota Jakarta Pusat<br />
+                      DKI Jakarta 10270
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Google Maps */}
+            <div className="rounded-xl overflow-hidden shadow-lg h-[300px] md:h-full">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4633776543887!2d106.79913607499668!3d-6.203487593781779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f6e1d3f7d8c9%3A0x3f7e05d81e5a6e0!2sGBK%20Arena!5e0!3m2!1sid!2sid!4v1707000000000!5m2!1sid!2sid"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+
         {/* CTA Button */}
         <div className="text-center">
           <Link
