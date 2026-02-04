@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -140,6 +140,22 @@ export default function ManagementDashboard() {
     const [wilayahData, setWilayahData] = useState<ProvinsiRef[]>([]);
     const [wilayahSummary, setWilayahSummary] = useState<WilayahSummary | null>(null);
     const [provinsiProgress, setProvinsiProgress] = useState<ProvinsiProgress[]>([]);
+
+    // Create kabupaten code to name mapping
+    const kabKotaMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        wilayahData.forEach((prov) => {
+            prov.kabupatenList.forEach((kab) => {
+                map[kab.code] = kab.name;
+            });
+        });
+        return map;
+    }, [wilayahData]);
+
+    // Helper function to get kabupaten name
+    const getKabKotaName = useCallback((kode: string) => {
+        return kabKotaMap[kode] || kode;
+    }, [kabKotaMap]);
 
     // Get kabupaten list based on selected provinsi
     const getKabKotaOptions = useCallback(() => {
@@ -625,7 +641,7 @@ export default function ManagementDashboard() {
                                     .slice(0, 5)
                                     .map(([kabKota, count]) => (
                                         <div key={kabKota} className="flex justify-between items-center">
-                                            <span className="text-gray-700 truncate">{kabKota}</span>
+                                            <span className="text-gray-700 truncate">{getKabKotaName(kabKota)}</span>
                                             <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                                                 {count}
                                             </span>
@@ -740,7 +756,7 @@ export default function ManagementDashboard() {
                                 <option value="">Semua Kab/Kota</option>
                                 {getKabKotaOptions().map((kabKota) => (
                                     <option key={kabKota} value={kabKota}>
-                                        {kabKota}
+                                        {getKabKotaName(kabKota)}
                                     </option>
                                 ))}
                             </select>
@@ -866,7 +882,7 @@ export default function ManagementDashboard() {
                                                             {getProvinsiName(survey.section1?.kontakResponden?.provinsi || "")}
                                                         </p>
                                                         <p className="text-sm text-gray-500">
-                                                            {survey.section1?.kontakResponden?.kabKota || "-"}
+                                                            {getKabKotaName(survey.section1?.kontakResponden?.kabKota || "")}
                                                         </p>
                                                     </div>
                                                 </td>
