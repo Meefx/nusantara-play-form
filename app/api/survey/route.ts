@@ -212,6 +212,7 @@ function ensureDefaults(data: any) {
 
     const defaultSection1 = {
         kategoriResponden: "",
+        keanggotaan: "",
         kontakResponden: defaultKontakResponden,
         jumlahPROT: "",
         jumlahPROTOther: "",

@@ -31,6 +31,7 @@ export default function Section6Form() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showWAPopup, setShowWAPopup] = useState(false);
   const [currentSurveyIndex, setCurrentSurveyIndex] = useState<number>(0);
   const [totalSavedSurveys, setTotalSavedSurveys] = useState<number>(0);
 
@@ -175,9 +176,8 @@ export default function Section6Form() {
       localStorage.removeItem('surveySection5');
       localStorage.removeItem('savedSurveys');
 
-      // Show success message and redirect to home
-      alert(`✅ Berhasil! Semua survey (${savedSurveys.length} PR/OT) telah tersimpan. Terima kasih atas partisipasi Anda!`);
-      router.push('/');
+      // Show popup instead of alert
+      setShowWAPopup(true);
     } catch (error) {
       console.error('Error submitting survey:', error);
       setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan survey');
@@ -287,7 +287,7 @@ export default function Section6Form() {
       )}
 
       {/* Navigation Buttons */}
-      {!isSuccess && (
+      {!isSuccess && !showWAPopup && (
         <div className="space-y-4">
           <div className="flex justify-between items-center pt-8">
             <button
@@ -329,6 +329,41 @@ export default function Section6Form() {
             <p className="text-sm text-blue-800">
               💡 <strong>Tips:</strong> Jika responden memiliki lebih dari satu PR/OT, gunakan tombol <strong>"Simpan & Buat PR/OT Baru"</strong> untuk melanjutkan input PR/OT berikutnya. Data responden (Section 1) akan tetap tersimpan.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp Popup */}
+      {showWAPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center transform transition-all scale-100 animate-scaleIn">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">✅</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Data Berhasil Disimpan!</h3>
+            <p className="text-gray-600 mb-6">
+              Terima kasih telah mengisi survey. Silakan bergabung ke grup WhatsApp kami untuk informasi lebih lanjut.
+            </p>
+
+            <a
+              href="https://chat.whatsapp.com/G5QAzzem1XT8E1VOJmXllh?mode=gi_t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-4 px-4 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-lg transition-colors duration-200 mb-3 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            >
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              Gabung Grup WhatsApp
+            </a>
+
+            <button
+              onClick={() => {
+                setShowWAPopup(false);
+                router.push('/');
+              }}
+              className="block w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors duration-200"
+            >
+              Kembali ke Beranda
+            </button>
           </div>
         </div>
       )}

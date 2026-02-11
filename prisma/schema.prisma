@@ -38,6 +38,7 @@ type KontakResponden {
 
 type Section1 {
   kategoriResponden String           @default("")
+  keanggotaan       String           @default("")
   kontakResponden   KontakResponden
   jumlahPROT        String           @default("")
   jumlahPROTOther   String           @default("")

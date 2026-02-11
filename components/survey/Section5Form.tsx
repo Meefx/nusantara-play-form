@@ -59,7 +59,7 @@ export default function Section5Form() {
           hasOther={true}
           otherValue={formData.hambatanUtamaOther}
           onOtherChange={(value) => setFormData({ ...formData, hambatanUtamaOther: value })}
-          otherLabel="Lainnya:"
+          otherLabel=":"
         />
       </QuestionCard>
 
@@ -77,7 +77,7 @@ export default function Section5Form() {
           hasOther={true}
           otherValue={formData.kebutuhanMendesakOther}
           onOtherChange={(value) => setFormData({ ...formData, kebutuhanMendesakOther: value })}
-          otherLabel="Lainnya:"
+          otherLabel=":"
         />
       </QuestionCard>
 

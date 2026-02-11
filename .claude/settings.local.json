@@ -4,7 +4,9 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm list:*)",
       "Bash(pnpm tsc:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma generate:*)"
     ]
-  }
+  },
+  "model": "claude-sonnet-4-5-20250929"
 }

@@ -22,6 +22,7 @@ import {
 
 interface Section1Data {
   kategoriResponden: string;
+  keanggotaan: string;
   namaLengkap: string;
   nomorHP: string;
   email: string;
@@ -35,6 +36,7 @@ export default function Section1Form() {
   const router = useRouter();
   const [formData, setFormData] = useState<Section1Data>({
     kategoriResponden: "",
+    keanggotaan: "",
     namaLengkap: "",
     nomorHP: "",
     email: "",
@@ -87,6 +89,11 @@ export default function Section1Form() {
     { value: "pegiat_prot", label: "Pegiat PR-OT" }
   ];
 
+  const keanggotaanOptions = [
+    { value: "anggota", label: "Anggota" },
+    { value: "pengurus", label: "Pengurus" }
+  ];
+
   const jumlahOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
@@ -112,6 +119,21 @@ export default function Section1Form() {
           options={kategoriRespondenOptions}
           value={formData.kategoriResponden}
           onChange={(value) => setFormData({ ...formData, kategoriResponden: value })}
+          hasOther={false}
+        />
+      </QuestionCard>
+
+      {/* Question 1b: Keanggotaan */}
+      <QuestionCard
+        title="Pilih Keanggotaan Anda"
+        required={true}
+        icon="👥"
+      >
+        <RadioGroup
+          name="keanggotaan"
+          options={keanggotaanOptions}
+          value={formData.keanggotaan}
+          onChange={(value) => setFormData({ ...formData, keanggotaan: value })}
           hasOther={false}
         />
       </QuestionCard>
@@ -217,6 +239,7 @@ export default function Section1Form() {
             // Simpan data Section 1 ke localStorage
             const section1Data = {
               kategoriResponden: formData.kategoriResponden,
+              keanggotaan: formData.keanggotaan,
               kontakResponden: {
                 namaLengkap: formData.namaLengkap,
                 nomorHP: formData.nomorHP,
