@@ -13,6 +13,7 @@ interface Survey {
     updatedAt: string;
     section1: {
         kategoriResponden: string;
+        keanggotaan: string;
         kontakResponden: {
             namaLengkap: string;
             nomorHP: string;
@@ -207,6 +208,14 @@ export default function SurveyDetailPage({
             masyarakat_umum: "Masyarakat Umum",
         };
         return labels[kategori] || kategori;
+    };
+
+    const getKeanggotaanLabel = (keanggotaan: string) => {
+        const labels: Record<string, string> = {
+            anggota: "Anggota",
+            pengurus: "Pengurus",
+        };
+        return labels[keanggotaan] || "-";
     };
 
     const getKategoriLabel = (kategori: string) => {
@@ -409,6 +418,16 @@ export default function SurveyDetailPage({
                                 </h4>
                                 <p className="text-gray-800">
                                     {getKategoriRespondenLabel(survey.section1?.kategoriResponden || "")}
+                                </p>
+                            </div>
+
+                            {/* Keanggotaan */}
+                            <div>
+                                <h4 className="font-semibold text-gray-500 text-sm mb-1">
+                                    Keanggotaan
+                                </h4>
+                                <p className="text-gray-800">
+                                    {getKeanggotaanLabel(survey.section1?.keanggotaan || "")}
                                 </p>
                             </div>
 
@@ -911,7 +930,7 @@ export default function SurveyDetailPage({
                                                 href={url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="block p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                                                className="block text-gray-500 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
                                             >
                                                 🎥 Video #{idx + 1}
                                             </a>

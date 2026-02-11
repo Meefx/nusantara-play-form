@@ -720,7 +720,7 @@ export default function ManagementDashboard() {
                                     setSearchQuery(e.target.value);
                                     setCurrentPage(1);
                                 }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full text-gray-500 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                         {/* Provinsi Filter */}
@@ -732,7 +732,7 @@ export default function ManagementDashboard() {
                                     setKabKotaFilter("");
                                     setCurrentPage(1);
                                 }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="text-gray-500 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                                 <option value="">Semua Provinsi</option>
                                 {statistics?.uniqueProvinsi.map((prov) => (
@@ -751,7 +751,7 @@ export default function ManagementDashboard() {
                                     setCurrentPage(1);
                                 }}
                                 disabled={!provinsiFilter}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                className="text-gray-500 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                             >
                                 <option value="">Semua Kab/Kota</option>
                                 {getKabKotaOptions().map((kabKota) => (
@@ -769,7 +769,7 @@ export default function ManagementDashboard() {
                                     setStatusFilter(e.target.value);
                                     setCurrentPage(1);
                                 }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="text-gray-500 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                                 <option value="">Semua Status</option>
                                 <option value="completed">Completed</option>
